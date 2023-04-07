@@ -51,6 +51,9 @@ async def add_review(order_id, order_review_id):
     port = ''
     proxy_username = ''
     proxy_password = ''
+    number = '89185863704'
+    # вынести в отдельный файл и ли в бд кинуть. Можно даже привязать один ua к пользователю, чтобы не менять каждый раз
+    # этот код можно заменить fake_useragent просто с external датой
     user_agents = [
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/109.0",
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 13.2; rv:109.0) Gecko/20100101 Firefox/109.0",
@@ -66,7 +69,8 @@ async def add_review(order_id, order_review_id):
     # account_link = await orders_db.get_profile_link_from_order_id(order_id)
     # users = await reviews_db.get_users_without_account_link(account_link)
     # user = random.choice(users)
-    avito_data = await start(mail, password, site, review_text, ip, port, proxy_username, proxy_password, user_agent)
+    avito_data = await start(number, mail, password, site, review_text, ip, port, proxy_username, proxy_password,
+                             user_agent)
 
     if len(avito_data['errors']) < 4:
         delay_minutes = random.randint(25, 49)
@@ -74,7 +78,7 @@ async def add_review(order_id, order_review_id):
         # Устанавливаем задержку перед запуском задачи
         await asyncio.sleep(delay_minutes * 60)
 
-        avito_data = await reviewer(mail, password, site, review_text, ip, port, proxy_username, proxy_password,
+        avito_data = await reviewer(number, mail, password, site, review_text, ip, port, proxy_username, proxy_password,
                                     user_agent)
         logger.error(rf"Find {len(avito_data['errors'])} errors")
 

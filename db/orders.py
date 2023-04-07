@@ -1,3 +1,5 @@
+import json
+
 import asyncpg as pg
 from asyncpg import Connection
 
@@ -18,7 +20,7 @@ class OrdersDB(DB):
             data['link'], data['reviews_count'], data['profile_link'], data['finish_date'])
         return order_id
 
-    async def get_profile_link_from_order_id(self, order_id):
+    async def get_profile_link_from_order_id(self, order_id):  # профиль линк сюда
         conn = await self.connection()
         try:
             link = await conn.fetchval("SELECT avito_profile_link FROM orders WHERE order_id = $1", order_id)
@@ -101,25 +103,45 @@ class ReviewsDB(DB):
         finally:
             await conn.close()
 
-
-
     async def add_cookies(self, number, session_cookies=None, avito_cookies=None, google_cookies=None):
         conn = await self.connection()
         try:
             if session_cookies is not None:
+                session_cookies = json.dumps(session_cookies)
                 await conn.execute(
-                    "INSERT INTO cookies(number, session_cookies) VALUES ($1, $2) ON CONFLICT (number) DO UPDATE SET session_cookies = $2",
+                    "UPDATE avito_users SET session_cookies = $2 WHERE number=$1",
                     number, session_cookies
                 )
+
             if avito_cookies is not None:
+                avito_cookies = json.dumps(avito_cookies)
                 await conn.execute(
-                    "INSERT INTO cookies(number, avito_cookies) VALUES ($1, $2) ON CONFLICT (number) DO UPDATE SET avito_cookies = $2",
+                    "UPDATE avito_users SET avito_cookies = $2 WHERE number=$1",
                     number, avito_cookies
                 )
+
             if google_cookies is not None:
+                google_cookies = json.dumps(google_cookies)
                 await conn.execute(
-                    "INSERT INTO cookies(number, google_cookies) VALUES ($1, $2) ON CONFLICT (number) DO UPDATE SET google_cookies = $2",
+                    "UPDATE avito_users SET google_cookies = $2 WHERE number=$1",
                     number, google_cookies
                 )
+        finally:
+            await conn.close()
+
+    async def get_cookies(self, number):
+        conn = await self.connection()
+        try:
+            row = await conn.fetchrow(
+                "SELECT session_cookies, avito_cookies, google_cookies FROM avito_users WHERE number=$1", number)
+            if row:
+                session_cookies, avito_cookies, google_cookies = row
+                session_cookies = json.loads(session_cookies) if session_cookies is not None else None
+                avito_cookies = json.loads(avito_cookies) if avito_cookies is not None else None
+                google_cookies = json.loads(google_cookies) if google_cookies is not None else None
+                return {'session_cookies': session_cookies, 'avito_cookies': avito_cookies,
+                        'google_cookies': google_cookies}
+            else:
+                return None
         finally:
             await conn.close()

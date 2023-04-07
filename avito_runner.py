@@ -1,4 +1,3 @@
-import asyncio
 import random
 
 from loguru import logger
@@ -6,7 +5,7 @@ from playwright.async_api import Playwright
 from playwright.async_api import async_playwright
 
 from avito.auth import first_login, login_with_cookies
-from avito.cookeis_commander import save_session, load_session
+from avito.cookeis_commander import save_cookies, load_cookies
 from avito.error_logger import error_log
 from avito.mouse import emulate_mouse_movement
 from avito.parse import parse_page
@@ -26,10 +25,11 @@ def get_random_viewport_size():
     return random.choice(sizes)
 
 
-async def main(mail: str, password: str, site: str, review_text: str, ip: str, port: str, proxy_username: str,
+async def main(number: str, mail: str, password: str, site: str, review_text: str, ip: str, port: str,
+               proxy_username: str,
                proxy_password: str, p: Playwright, user_agent: str):
     # if not ip or not port:
-    #     raise Exception
+    #     raise Exception("Invalid proxy ip or port")
 
     proxy_settings = await create_proxy_settings(ip, port, proxy_username, proxy_password)
     size = get_random_viewport_size()
@@ -38,7 +38,8 @@ async def main(mail: str, password: str, site: str, review_text: str, ip: str, p
     context = await browser.new_context(user_agent=user_agent, viewport=size)
     page = await context.new_page()
     width, height = await page.evaluate("() => [window.innerWidth, window.innerHeight]")
-    data = dict(mail=mail,
+    data = dict(number=number,
+                mail=mail,
                 password=password,
                 site=site,
                 review_text=review_text,
@@ -66,23 +67,28 @@ async def main(mail: str, password: str, site: str, review_text: str, ip: str, p
     except:
         await error_log(data, 'Proxy checking error')
 
-    try:
-        await load_session(context, 'avito_reviewer/session_data.json')
-        logger.info('Session data loaded')
-    except Exception as e:
-        print(e)
-        await error_log(data, 'Error setting session state')
+
+    await load_cookies(data, context)
+    logger.info('Session data loaded')
+    await login_with_cookies(data, context)  # логин по куки
+
+    # try:
+    #     await load_cookies(data, context)
+    #     logger.info('Session data loaded')
+    # except Exception as e:
+    #     print(e, '1')
+    #     await error_log(data, 'Error setting session state')
+    #
+    # try:
+    #     await login_with_cookies(data, context)  # логин по куки
+    # except Exception as e:
+    #     print(e, '2')
+    #     await error_log(data, 'Error with login_with_cookies')
 
     try:
-        await login_with_cookies(context, page, mail, password)  # логин по куки
+        await first_login(data, context, page)  # логин по гуглу
     except Exception as e:
-        print(e)
-        await error_log(data, 'Error with login_with_cookies')
-
-    try:
-        await first_login(context, page, mail, password)  # логин по гуглу
-    except Exception as e:
-        print(e)
+        print(e, '3')
         await error_log(data, 'Error with first_login')
 
     input('Press Enter to continue')
@@ -108,46 +114,53 @@ async def main(mail: str, password: str, site: str, review_text: str, ip: str, p
     return browser, context, page, data
 
 
-async def start(mail: str, password: str, site: str, review_text: str, ip: str, port: str, proxy_username: str,
+async def start(number, mail: str, password: str, site: str, review_text: str, ip: str, port: str, proxy_username: str,
                 proxy_password: str, user_agent: str):
     async with async_playwright() as p:
-        browser, context, page, data = await main(mail, password, site, review_text, ip, port, proxy_username,
+        browser, context, page, data = await main(number, mail, password, site, review_text, ip, port,
+                                                  proxy_username,
                                                   proxy_password, p,
                                                   user_agent)
         await phone_checker(page, data)  # подготовка к отзыву, смотрим телефон
-        await save_session(context, 'avito_reviewer/session_data.json')  # подгружаем сессию из бд, в формате json
-        print(data)
+
+            # await set_review_status('YANKE GO HOME')
+        #
         # await set_review_status('YANKE GO HOME')
+        await save_cookies(data=data, context=context,
+                           cookies_name='session')  # загружаем сессию в бд, в формате json
+        print(data)
         return data
 
 
-async def reviewer(mail: str, password: str, site: str, review_text: str, ip: str, port: str, proxy_username: str,
+async def reviewer(number, mail: str, password: str, site: str, review_text: str, ip: str, port: str,
+                   proxy_username: str,
                    proxy_password: str, user_agent: str):
     async with async_playwright() as p:
-        browser, context, page, data = await main(mail, password, site, review_text, ip, port, proxy_username,
+        browser, context, page, data = await main(number, mail, password, site, review_text, ip, port, proxy_username,
                                                   proxy_password, p,
                                                   user_agent)
         await set_review(context, page, data)  # оставляем отзыв
-        await save_session(context, 'avito_reviewer/session_data.json')
+        await save_cookies(data=data, context=context,
+                           cookies_name='session')
+        # проверка на критичность ошибки какую-то бы запихнуть сюда чтобы точно знать какой устанавливать
         # await set_review_status('YANKE GO HOME')
         print(data)
         return data
 
-
-if __name__ == '__main__':
-    mail = "AndoimGavrilov671@gmail.com"
-    password = "ad5jQClii5IC"
-    site = 'https://www.avito.ru/moskva/detskaya_odezhda_i_obuv/romper_dlya_devochki_2894148448'
-    review_text = 'У меня девочка 5 лет, ромпер подошёл!'
-
-    ip = ''
-    port = ''
-    proxy_username = ''
-    proxy_password = ''
-
-    user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/109.0'
-    # user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36'
-
-    asyncio.run(start(mail, password, site, review_text, ip, port, proxy_username, proxy_password, user_agent))
-
-    # asyncio.run(reviewer(mail, password, site, review_text, ip, port, proxy_username, proxy_password, user_agent))
+# if __name__ == '__main__':
+#     mail = "AndoimGavrilov671@gmail.com"
+#     password = "ad5jQClii5IC"
+#     site = 'https://www.avito.ru/moskva/detskaya_odezhda_i_obuv/romper_dlya_devochki_2894148448'
+#     review_text = 'У меня девочка 5 лет, ромпер подошёл!'
+#
+#     ip = ''
+#     port = ''
+#     proxy_username = ''
+#     proxy_password = ''
+#
+#     user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/109.0'
+#     # user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36'
+#
+#     asyncio.run(start(mail, password, site, review_text, ip, port, proxy_username, proxy_password, user_agent))
+#
+#     # asyncio.run(reviewer(mail, password, site, review_text, ip, port, proxy_username, proxy_password, user_agent))

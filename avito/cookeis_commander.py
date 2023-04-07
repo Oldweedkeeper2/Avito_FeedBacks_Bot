@@ -1,19 +1,44 @@
 import json
 
+from db.orders import ReviewsDB, OrdersDB
+
+reviews_db = ReviewsDB()
+orders_db = OrdersDB()
+
 
 # пока что это всё работает через файлы, но надеюсь потом прикручу бд
-async def save_cookies(context, filename: str):
-    # await add_cookies
+async def save_cookies(data, context, cookies_name):
     cookies = await context.cookies()
-    with open(filename, 'w') as f:
-        f.write(json.dumps(cookies))
+    if cookies_name == 'session':
+        await reviews_db.add_cookies(number=data['number'], session_cookies=cookies)
+    elif cookies_name == 'google':
+        await reviews_db.add_cookies(number=data['number'], google_cookies=cookies)
+    elif cookies_name == 'avito':
+        await reviews_db.add_cookies(number=data['number'], avito_cookies=cookies)
+
+    # cookies = await context.cookies()
+    # with open(filename, 'w') as f:
+    #     f.write(json.dumps(cookies))
 
 
 # можно загружать прямо из бд, вообще плевать
-async def load_cookies(context, filename: str):
-    with open(filename, 'r') as f:
-        cookies = json.loads(f.read())
-    await context.add_cookies(cookies)
+async def load_cookies(data, context):
+    try:
+        cookies = await reviews_db.get_cookies(number=data['number'])
+        with open(f"{data['number']}.json", 'w') as f:
+            f.write(json.dumps(cookies.pop('session_cookies')))
+
+        await context.storage_state(path=f"{data['number']}.json")
+        for i in cookies:
+            print(i)
+            print(cookies[i])
+            await context.add_cookies(cookies=cookies[i])
+
+    except:
+        raise
+        # with open(filename, 'r') as f:
+    #     cookies = json.loads(f.read())
+    #     await context.add_cookies(cookies)
 
 
 # сохраняем все данные о сессии в общем виде

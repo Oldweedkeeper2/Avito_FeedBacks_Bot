@@ -9,7 +9,7 @@ from .cookeis_commander import save_cookies, load_cookies
 # можно сохранять прямо в бд, вообще плевать
 # добавлять ли тут эмуляторы мышки
 
-async def google_login(context, page, mail, password):
+async def google_login(data, context, page):
     button_class = "VfPpkd-LgbsSe VfPpkd-LgbsSe-OWXEXe-k8QpJ VfPpkd-LgbsSe-OWXEXe-dgl2Hf nCP5yc AjY5Oe DuMIQc LQeN7 qIypjc TrZEUc lw1w4b"
 
     # Вводим email и нажимаем "Далее"
@@ -23,27 +23,28 @@ async def google_login(context, page, mail, password):
         raise Exception('outdated browser')
 
     # input('Остановка для регистрации руками это в auth.py')
-    await page.fill('input[type="email"]', mail)
+    await page.fill('input[type="email"]', data['mail'])
     await page.click(f'button[class="{button_class}"]')
 
     # Вводим пароль и нажимаем "Далее"
     await page.wait_for_selector('input[type="password"]')
-    await page.fill('input[type="password"]', password)
+    await page.fill('input[type="password"]', data['password'])
     await page.click(f'button[class="{button_class}"]')
 
     await asyncio.sleep(3)  # Тут мы ждём подтверждения входа с телефона, если есть
 
-    await save_cookies(context)  # Сохраняем куки (пока в файл)
+    await save_cookies(data, context, 'google')  # Сохраняем куки (пока в файл)
 
 
-async def avito_login(context, page):
+async def avito_login(data, context, page):
     try:
         await stealth_async(page)
         await page.goto('https://www.avito.ru/#login?authsrc=h')
         await page.wait_for_url('https://www.avito.ru/#login?authsrc=h')
         button = await page.query_selector('button[data-marker="social-network-item(gp)"]')
         await button.click()
-    except:
+    except Exception as e:
+        print(e)
         loguru.logger.error('Error nen')
     # try:
     #     phone_code = input('введите код из смс это в auth.py')
@@ -62,28 +63,27 @@ async def avito_login(context, page):
     '''
 
     # Сохраняем куки (пока в файл)
-    await save_cookies(context, 'cookies/avito_cookies_1.json')
+    await save_cookies(data, context, 'avito')
 
 
-async def first_login(context, page, mail, password):
+async def first_login(data, context, page):
     # Авторизация в гугле
     try:
-        await google_login(context, page, mail, password)
+        await google_login(data, context, page)
     except Exception:
         pass
     # Авторизация в авито/ эта шляпа иногда может выдавать белый экран в открывашке, лечится релоадом и ожиданием всего
     try:
-        await avito_login(context, page)
+        await avito_login(data, context, page)
     except Exception as e:
         print(e)
         raise
 
 
-async def login_with_cookies(context, page, mail, password):
+async def login_with_cookies(data, context):
     # пока достаём из файла, пишем имя файла, позже будем передавать mail и password
 
     # гугл срать хотел на то, что я ему куки заливаю
-    await load_cookies(context, 'avito_reviewer/cookies/google_cookies_1.json')
-    await load_cookies(context, 'avito_reviewer/cookies/avito_cookies_1.json')
+    await load_cookies(data, context)
 
 # asyncio.run(first_login())
