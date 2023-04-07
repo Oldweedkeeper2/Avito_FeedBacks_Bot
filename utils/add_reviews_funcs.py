@@ -42,15 +42,16 @@ def get_profile_link_from_product_link(product_link):
 
 
 async def add_review(order_id, order_review_id):
+    global avito_data
     mail = "AndoimGavrilov671@gmail.com"
     password = "ad5jQClii5IC"
     site = 'https://www.avito.ru/moskva/detskaya_odezhda_i_obuv/romper_dlya_devochki_2894148448'
     review_text = 'У меня девочка 5 лет, ромпер подошёл!'
 
-    ip = ''
-    port = ''
-    proxy_username = ''
-    proxy_password = ''
+    ip = '77.91.91.137'
+    port = '63910'
+    proxy_username = 'DjYgvRek'
+    proxy_password = 'jCcfW5CL'
     number = '89185863704'
     # вынести в отдельный файл и ли в бд кинуть. Можно даже привязать один ua к пользователю, чтобы не менять каждый раз
     # этот код можно заменить fake_useragent просто с external датой
@@ -69,19 +70,33 @@ async def add_review(order_id, order_review_id):
     # account_link = await orders_db.get_profile_link_from_order_id(order_id)
     # users = await reviews_db.get_users_without_account_link(account_link)
     # user = random.choice(users)
-    avito_data = await start(number, mail, password, site, review_text, ip, port, proxy_username, proxy_password,
-                             user_agent)
+    avito_data = None
+    try:
+        avito_data = await start(number, mail, password, site, review_text, ip, port, proxy_username, proxy_password,
+                                 user_agent)
+    except Exception as e:
+        logger.error(e)
+    await reviews_db.update_status(number=avito_data['number'], status_id=1)
+    if avito_data is not None:
 
-    if len(avito_data['errors']) < 4:
-        delay_minutes = random.randint(25, 49)
+        if len(avito_data['errors']) > 0:
+            logger.info(f'Phone Checker finished with {len(avito_data["errors"])} errors: {avito_data["errors"]}')
+        else:
+            logger.info(f'Phone Checker finished without errors')
 
-        # Устанавливаем задержку перед запуском задачи
-        await asyncio.sleep(delay_minutes * 60)
+        try:
+            if len(avito_data['errors']) < 4:
+                delay_minutes = random.randint(25, 49)
 
-        avito_data = await reviewer(number, mail, password, site, review_text, ip, port, proxy_username, proxy_password,
-                                    user_agent)
-        logger.error(rf"Find {len(avito_data['errors'])} errors")
+                # Устанавливаем задержку перед запуском задачи
+                await asyncio.sleep(delay_minutes * 60)
 
+                avito_data = await reviewer(number, mail, password, site, review_text, ip, port, proxy_username,
+                                            proxy_password,
+                                            user_agent)
+                logger.error(rf"Find {len(avito_data['errors'])} errors")
+        except Exception as e:
+            logger.error(e)
 
 # async def get_random_review_on_priority():
 #     reviews =

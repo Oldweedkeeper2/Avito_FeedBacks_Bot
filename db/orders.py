@@ -31,17 +31,28 @@ class OrdersDB(DB):
 
 class ReviewsDB(DB):
 
-    async def get_reviews(self, *_, order_id=None, status='all', user_phone=None):  # получить отзывы
+    async def get_users_without_account_id(self, id):
+        conn = await self.connection()
+
+        try:
+            query = "SELECT * FROM avito_users WHERE NOT EXISTS (SELECT * FROM userbots_accounts_busy " \
+                    "WHERE number = avito_users.number AND account_id = $1)"
+            numbers = await conn.fetch(query, id)
+            return numbers
+        finally:
+            await conn.close()
+
+    async def get_reviews(self, *_, order_id=None, status='all', number=None):  # получить отзывы
         conn = await self.connection()
 
         try:
             query = "SELECT * FROM reviews_texts"
             if order_id is not None:
-                if user_phone is not None:
-                    raise ValueError("Either order_id or user_phone should be passed")
+                if number is not None:
+                    raise ValueError("Either order_id or number should be passed")
                 query += f" WHERE order_id = {order_id}"
-            elif user_phone is not None:
-                query += f" WHERE user_phone = {user_phone}"
+            elif number is not None:
+                query += f" WHERE number = {number}"
             if status != 'all':
                 query += f" AND status_id = (SELECT status_id FROM statuses WHERE name = '{status}')"
             return await conn.fetch(query)
@@ -92,16 +103,6 @@ class ReviewsDB(DB):
                 await conn.execute('INSERT INTO reviews_texts (order_id, order_review_id, text) VALUES ($1, $2, $3)',
                                    data['order_id'], order_review_id, text)
 
-    async def get_users_without_account_link(self, link):
-        conn = await self.connection()
-
-        try:
-            query = "SELECT * FROM avito_users WHERE NOT EXISTS (SELECT * FROM userbots_accounts_busy " \
-                    "WHERE number = avito_users.number AND account_link = $1)"
-            numbers = await conn.fetch(query, link)
-            return numbers
-        finally:
-            await conn.close()
 
     async def add_cookies(self, number, session_cookies=None, avito_cookies=None, google_cookies=None):
         conn = await self.connection()
@@ -141,6 +142,19 @@ class ReviewsDB(DB):
                 google_cookies = json.loads(google_cookies) if google_cookies is not None else None
                 return {'session_cookies': session_cookies, 'avito_cookies': avito_cookies,
                         'google_cookies': google_cookies}
+            else:
+                return None
+        finally:
+            await conn.close()
+
+    async def update_status(self, number, status_id):
+        conn = await self.connection()
+        try:
+            if status_id is not None:
+                await conn.execute(
+                    "UPDATE reviews_texts SET status_id = $2 WHERE number=$1",
+                    number, status_id
+                )
             else:
                 return None
         finally:

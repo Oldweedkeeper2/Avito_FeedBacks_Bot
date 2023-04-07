@@ -41,6 +41,7 @@ async def avito_login(data, context, page):
         await stealth_async(page)
         await page.goto('https://www.avito.ru/#login?authsrc=h')
         await page.wait_for_url('https://www.avito.ru/#login?authsrc=h')
+        await page.wait_for_selector('button[data-marker="social-network-item(gp)"]')
         button = await page.query_selector('button[data-marker="social-network-item(gp)"]')
         await button.click()
     except Exception as e:

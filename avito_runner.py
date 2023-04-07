@@ -1,3 +1,4 @@
+import asyncio
 import random
 
 from loguru import logger
@@ -13,7 +14,9 @@ from avito.phone_finder import phone_checker
 from avito.profile_commander import check_contact_snippet
 from avito.proxy import check_ip_address, create_proxy_settings
 from avito.reviews import set_review
+from db.orders import ReviewsDB
 
+reviews_db = ReviewsDB()
 
 def get_random_viewport_size():
     sizes = [
@@ -28,13 +31,13 @@ def get_random_viewport_size():
 async def main(number: str, mail: str, password: str, site: str, review_text: str, ip: str, port: str,
                proxy_username: str,
                proxy_password: str, p: Playwright, user_agent: str):
-    # if not ip or not port:
-    #     raise Exception("Invalid proxy ip or port")
+    if not ip or not port:
+        raise Exception("Invalid proxy ip or port")
 
-    proxy_settings = await create_proxy_settings(ip, port, proxy_username, proxy_password)
+    await create_proxy_settings(ip, port, proxy_username, proxy_password)
     size = get_random_viewport_size()
     browser_type = p.firefox
-    browser = await browser_type.launch(headless=False, timeout=50000)
+    browser = await browser_type.launch(headless=True, timeout=50000)
     context = await browser.new_context(user_agent=user_agent, viewport=size)
     page = await context.new_page()
     width, height = await page.evaluate("() => [window.innerWidth, window.innerHeight]")
@@ -50,6 +53,8 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
                 acc_status='OPEN',
                 screen={'width': width, 'height': height},
                 errors=[])
+    await reviews_db.update_status(number=data['number'], status_id=1)
+
     try:
         if browser.is_connected():
             logger.info('Browser launched')
@@ -67,23 +72,18 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
     except:
         await error_log(data, 'Proxy checking error')
 
+    try:
+        await load_cookies(data, context)
+        logger.info('Session data loaded (session, google, avito)')
+    except Exception as e:
+        print(e, '1')
+        await error_log(data, 'Error setting session state')
 
-    await load_cookies(data, context)
-    logger.info('Session data loaded')
-    await login_with_cookies(data, context)  # логин по куки
-
-    # try:
-    #     await load_cookies(data, context)
-    #     logger.info('Session data loaded')
-    # except Exception as e:
-    #     print(e, '1')
-    #     await error_log(data, 'Error setting session state')
-    #
-    # try:
-    #     await login_with_cookies(data, context)  # логин по куки
-    # except Exception as e:
-    #     print(e, '2')
-    #     await error_log(data, 'Error with login_with_cookies')
+    try:
+        await login_with_cookies(data, context)  # логин по куки
+    except Exception as e:
+        print(e, '2')
+        await error_log(data, 'Error with login_with_cookies')
 
     try:
         await first_login(data, context, page)  # логин по гуглу
@@ -91,25 +91,27 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
         print(e, '3')
         await error_log(data, 'Error with first_login')
 
-    input('Press Enter to continue')
-
+    # input('Press Enter to continue')
+    await asyncio.sleep(4)
     try:
         await parse_page(page, data)  # парсим страницу
 
-    except:
+    except Exception as e:
+        print(e, '4')
         await error_log(data, 'Error page parsing')
 
     try:
         await emulate_mouse_movement(page, duration=4)  # эмулируем человеческую мышь
-
-    except:
+    except Exception as e:
+        print(e, '5')
         await error_log(data, 'Error emulate_mouse_movement')
 
-    try:
-        await check_contact_snippet(page, data)  # проверяем ждущие отзывы (вынести в отдельную функцию
-
-    except:
-        await error_log(data, 'Error check_contact_snippet')
+    # try:
+    #     await check_contact_snippet(page, data)  # проверяем ждущие отзывы (вынести в отдельную функцию
+    #
+    # except Exception as e:
+    #     print(e, '6')
+    #     await error_log(data, 'Error check_contact_snippet')
 
     return browser, context, page, data
 
@@ -121,13 +123,24 @@ async def start(number, mail: str, password: str, site: str, review_text: str, i
                                                   proxy_username,
                                                   proxy_password, p,
                                                   user_agent)
+        try:
+            await check_contact_snippet(page, data)  # проверяем ждущие отзывы (вынести в отдельную функцию
+
+        except Exception as e:
+            print(e, '6')
+            await error_log(data, 'Error check_contact_snippet')
+
         await phone_checker(page, data)  # подготовка к отзыву, смотрим телефон
 
-            # await set_review_status('YANKE GO HOME')
-        #
-        # await set_review_status('YANKE GO HOME')
-        await save_cookies(data=data, context=context,
-                           cookies_name='session')  # загружаем сессию в бд, в формате json
+        if len(data['errors']) > 5:
+            logger.error("Too many errors")
+            await reviews_db.update_status(number=data['number'], status_id=2)
+            return
+        try:
+            await save_cookies(data=data, context=context,
+                               cookies_name='session')  # загружаем сессию в бд, в формате json
+        except Exception as e:
+            await error_log(data, f'Error saving data {e}')
         print(data)
         return data
 
@@ -140,10 +153,15 @@ async def reviewer(number, mail: str, password: str, site: str, review_text: str
                                                   proxy_password, p,
                                                   user_agent)
         await set_review(context, page, data)  # оставляем отзыв
-        await save_cookies(data=data, context=context,
-                           cookies_name='session')
-        # проверка на критичность ошибки какую-то бы запихнуть сюда чтобы точно знать какой устанавливать
-        # await set_review_status('YANKE GO HOME')
+        if len(data['errors']) > 5:
+            logger.error("Too many errors")
+            await reviews_db.update_status(number=data['number'], status_id=2)
+            return
+        try:
+            await save_cookies(data=data, context=context,
+                               cookies_name='session')  # загружаем сессию в бд, в формате json
+        except Exception as e:
+            await error_log(data, f'Error saving data {e}')
         print(data)
         return data
 
