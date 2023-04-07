@@ -1,0 +1,418 @@
+WARNING:aiogram:Goodbye!
+ERROR:asyncio:Task exception was never retrieved
+future: <Task finished name='Task-13' coro=<Dispatcher._process_polling_updates() done, defined at C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py:407> exception=TypeError("AddRewievsHandlers.add_reviews_handler() missing 1 required positional argument: 'call'")>
+Traceback (most recent call last):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 415, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 235, in process_updates
+    return await asyncio.gather(*tasks)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 283, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+TypeError: AddRewievsHandlers.add_reviews_handler() missing 1 required positional argument: 'call'
+WARNING:aiogram:Goodbye!
+ERROR:asyncio:Task exception was never retrieved
+future: <Task finished name='Task-29' coro=<Dispatcher._process_polling_updates() done, defined at C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py:407> exception=MessageNotModified('Message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message')>
+Traceback (most recent call last):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 415, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 235, in process_updates
+    return await asyncio.gather(*tasks)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 256, in process_update
+    return await self.message_handlers.notify(update.message)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\roles\manager.py", line 67, in amount_of_days_handler
+    await bot.edit_message_text(text='РџРѕР¶Р°Р»СѓР№СЃС‚Р°, РѕС‚РїСЂР°РІСЊС‚Рµ РјРЅРµ С‡РёСЃР»Рѕ РґРЅРµР№, Р·Р° РєРѕС‚РѕСЂРѕРµ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РѕС‚РїСЂР°РІР»РµРЅС‹ РІСЃРµ '
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\bot.py", line 3122, in edit_message_text
+    result = await self.request(api.Methods.EDIT_MESSAGE_TEXT, payload)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\base.py", line 236, in request
+    return await api.make_request(await self.get_session(), self.server, self.__token, method, data, files,
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\api.py", line 115, in check_result
+    exceptions.BadRequest.detect(description)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\utils\exceptions.py", line 140, in detect
+    raise err(cls.text or description)
+aiogram.utils.exceptions.MessageNotModified: Message is not modified: specified new message content and reply markup are exactly the same as a current content and reply markup of the message
+WARNING:aiogram:Goodbye!
+WARNING:aiogram:Goodbye!
+WARNING:aiogram:Goodbye!
+WARNING:aiogram:Goodbye!
+ERROR:asyncio:Task exception was never retrieved
+future: <Task finished name='Task-35' coro=<Dispatcher._process_polling_updates() done, defined at C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py:407> exception=MessageTextIsEmpty('Message text is empty')>
+Traceback (most recent call last):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 415, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 235, in process_updates
+    return await asyncio.gather(*tasks)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 283, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\roles\manager.py", line 102, in confirmation_handler
+    await call.message.answer('')
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\types\message.py", line 438, in answer
+    return await self.bot.send_message(
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\bot.py", line 346, in send_message
+    result = await self.request(api.Methods.SEND_MESSAGE, payload)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\base.py", line 236, in request
+    return await api.make_request(await self.get_session(), self.server, self.__token, method, data, files,
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\api.py", line 115, in check_result
+    exceptions.BadRequest.detect(description)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\utils\exceptions.py", line 140, in detect
+    raise err(cls.text or description)
+aiogram.utils.exceptions.MessageTextIsEmpty: Message text is empty
+WARNING:aiogram:Goodbye!
+ERROR:aiogram.dispatcher.dispatcher:Cause exception while getting updates.
+Traceback (most recent call last):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\api.py", line 139, in make_request
+    async with session.post(url, data=req, **kwargs) as response:
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiohttp\client.py", line 1141, in __aenter__
+    self._resp = await self._coro
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiohttp\client.py", line 560, in _request
+    await resp.start(conn)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiohttp\client_reqrep.py", line 899, in start
+    message, payload = await protocol.read()  # type: ignore[union-attr]
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiohttp\streams.py", line 616, in read
+    await self._waiter
+aiohttp.client_exceptions.ClientOSError: [WinError 1236] РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє СЃРµС‚Рё Р±С‹Р»Рѕ СЂР°Р·РѕСЂРІР°РЅРѕ Р»РѕРєР°Р»СЊРЅРѕР№ СЃРёСЃС‚РµРјРѕР№
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 381, in start_polling
+    updates = await self.bot.get_updates(
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\bot.py", line 110, in get_updates
+    result = await self.request(api.Methods.GET_UPDATES, payload)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\base.py", line 236, in request
+    return await api.make_request(await self.get_session(), self.server, self.__token, method, data, files,
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\api.py", line 142, in make_request
+    raise exceptions.NetworkError(f"aiohttp client throws an error: {e.__class__.__name__}: {e}")
+aiogram.utils.exceptions.NetworkError: Aiohttp client throws an error: ClientOSError: [WinError 1236] РџРѕРґРєР»СЋС‡РµРЅРёРµ Рє СЃРµС‚Рё Р±С‹Р»Рѕ СЂР°Р·РѕСЂРІР°РЅРѕ Р»РѕРєР°Р»СЊРЅРѕР№ СЃРёСЃС‚РµРјРѕР№
+WARNING:aiogram:Goodbye!
+ERROR:asyncio:Task exception was never retrieved
+future: <Task finished name='Task-7' coro=<Dispatcher._process_polling_updates() done, defined at C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py:407> exception=BadRequest('Can\'t parse keyboard button: field "web_app" must be of type object')>
+Traceback (most recent call last):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 415, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 235, in process_updates
+    return await asyncio.gather(*tasks)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 256, in process_update
+    return await self.message_handlers.notify(update.message)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\roles\manager.py", line 14, in start_command_handler
+    await msg.answer('Привет. Ты менеджер. Выбери действие.', reply_markup=st_kb)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\types\message.py", line 438, in answer
+    return await self.bot.send_message(
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\bot.py", line 346, in send_message
+    result = await self.request(api.Methods.SEND_MESSAGE, payload)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\base.py", line 236, in request
+    return await api.make_request(await self.get_session(), self.server, self.__token, method, data, files,
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\api.py", line 115, in check_result
+    exceptions.BadRequest.detect(description)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\utils\exceptions.py", line 141, in detect
+    raise cls(description)
+aiogram.utils.exceptions.BadRequest: Can't parse keyboard button: field "web_app" must be of type object
+ERROR:asyncio:Task exception was never retrieved
+future: <Task finished name='Task-17' coro=<Dispatcher._process_polling_updates() done, defined at C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py:407> exception=BadRequest('Can\'t parse keyboard button: field "web_app" must be of type object')>
+Traceback (most recent call last):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 415, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 235, in process_updates
+    return await asyncio.gather(*tasks)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 256, in process_update
+    return await self.message_handlers.notify(update.message)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\roles\manager.py", line 14, in start_command_handler
+    await msg.answer('Привет. Ты менеджер. Выбери действие.', reply_markup=st_kb)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\types\message.py", line 438, in answer
+    return await self.bot.send_message(
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\bot.py", line 346, in send_message
+    result = await self.request(api.Methods.SEND_MESSAGE, payload)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\base.py", line 236, in request
+    return await api.make_request(await self.get_session(), self.server, self.__token, method, data, files,
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\api.py", line 115, in check_result
+    exceptions.BadRequest.detect(description)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\utils\exceptions.py", line 141, in detect
+    raise cls(description)
+aiogram.utils.exceptions.BadRequest: Can't parse keyboard button: field "web_app" must be of type object
+ERROR:asyncio:Task exception was never retrieved
+future: <Task finished name='Task-24' coro=<Dispatcher._process_polling_updates() done, defined at C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py:407> exception=BadRequest('Can\'t parse keyboard button: field "web_app" must be of type object')>
+Traceback (most recent call last):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 415, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 235, in process_updates
+    return await asyncio.gather(*tasks)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 256, in process_update
+    return await self.message_handlers.notify(update.message)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\roles\manager.py", line 14, in start_command_handler
+    await msg.answer('Привет. Ты менеджер. Выбери действие.', reply_markup=st_kb)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\types\message.py", line 438, in answer
+    return await self.bot.send_message(
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\bot.py", line 346, in send_message
+    result = await self.request(api.Methods.SEND_MESSAGE, payload)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\base.py", line 236, in request
+    return await api.make_request(await self.get_session(), self.server, self.__token, method, data, files,
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\api.py", line 115, in check_result
+    exceptions.BadRequest.detect(description)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\utils\exceptions.py", line 141, in detect
+    raise cls(description)
+aiogram.utils.exceptions.BadRequest: Can't parse keyboard button: field "web_app" must be of type object
+WARNING:aiogram:Goodbye!
+ERROR:asyncio:Task exception was never retrieved
+future: <Task finished name='Task-7' coro=<Dispatcher._process_polling_updates() done, defined at C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py:407> exception=BadRequest('Can\'t parse keyboard button: can\'t find field "url"')>
+Traceback (most recent call last):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 415, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 235, in process_updates
+    return await asyncio.gather(*tasks)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 256, in process_update
+    return await self.message_handlers.notify(update.message)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\roles\manager.py", line 14, in start_command_handler
+    await msg.answer('Привет. Ты менеджер. Выбери действие.', reply_markup=st_kb)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\types\message.py", line 438, in answer
+    return await self.bot.send_message(
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\bot.py", line 346, in send_message
+    result = await self.request(api.Methods.SEND_MESSAGE, payload)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\base.py", line 236, in request
+    return await api.make_request(await self.get_session(), self.server, self.__token, method, data, files,
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\api.py", line 140, in make_request
+    return check_result(method, response.content_type, response.status, await response.text())
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\bot\api.py", line 115, in check_result
+    exceptions.BadRequest.detect(description)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\utils\exceptions.py", line 141, in detect
+    raise cls(description)
+aiogram.utils.exceptions.BadRequest: Can't parse keyboard button: can't find field "url"
+WARNING:aiogram:Goodbye!
+WARNING:aiogram:Goodbye!
+ERROR:asyncio:Task exception was never retrieved
+future: <Task finished name='Task-33' coro=<Dispatcher._process_polling_updates() done, defined at C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py:407> exception=TypeError('unsupported type for timedelta days component: str')>
+Traceback (most recent call last):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 415, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 235, in process_updates
+    return await asyncio.gather(*tasks)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 256, in process_update
+    return await self.message_handlers.notify(update.message)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\roles\manager.py", line 91, in amount_of_days_handler
+    finish_date = get_date(days)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\utils\add_reviews_funcs.py", line 14, in get_date
+    result = today + timedelta(days=n)
+TypeError: unsupported type for timedelta days component: str
+WARNING:aiogram:Goodbye!
+ERROR:asyncio:Task exception was never retrieved
+future: <Task finished name='Task-34' coro=<Dispatcher._process_polling_updates() done, defined at C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py:407> exception=TypeError("get_profile_link_from_product_link() missing 1 required positional argument: 'product_link'")>
+Traceback (most recent call last):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 415, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 235, in process_updates
+    return await asyncio.gather(*tasks)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 283, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\roles\manager.py", line 105, in confirmation_handler
+    profile_link = get_profile_link_from_product_link()
+TypeError: get_profile_link_from_product_link() missing 1 required positional argument: 'product_link'
+WARNING:aiogram:Goodbye!
+WARNING:aiogram:Goodbye!
+ERROR:asyncio:Task exception was never retrieved
+future: <Task finished name='Task-29' coro=<Dispatcher._process_polling_updates() done, defined at C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py:407> exception=ConnectionDoesNotExistError('connection was closed in the middle of operation')>
+Traceback (most recent call last):
+  File "C:\Users\larik\AppData\Local\Programs\Python\Python310\lib\asyncio\windows_events.py", line 480, in finish_recv
+    return ov.getresult()
+OSError: [WinError 64] Указанное сетевое имя более недоступно
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\larik\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 282, in _loop_reading
+    length = fut.result()
+  File "C:\Users\larik\AppData\Local\Programs\Python\Python310\lib\asyncio\windows_events.py", line 812, in _poll
+    value = callback(transferred, key, ov)
+  File "C:\Users\larik\AppData\Local\Programs\Python\Python310\lib\asyncio\windows_events.py", line 484, in finish_recv
+    raise ConnectionResetError(*exc.args)
+ConnectionResetError: [WinError 64] Указанное сетевое имя более недоступно
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 415, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 235, in process_updates
+    return await asyncio.gather(*tasks)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 283, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\roles\manager.py", line 110, in confirmation_handler
+    await start_reviews(order_id)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\orders\start.py", line 6, in start_reviews
+    order_reviews = await reviews_db.get_reviews(order_id=order_id)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\db\orders.py", line 28, in get_reviews
+    conn = await self.connection()
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\db\orders.py", line 11, in connection
+    return await pg.connect(user=user, password=password, host=host, port=port, database=database)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\asyncpg\connection.py", line 2092, in connect
+    return await connect_utils._connect(
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\asyncpg\connect_utils.py", line 881, in _connect
+    return await _connect_addr(
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\asyncpg\connect_utils.py", line 773, in _connect_addr
+    return await __connect_addr(params, timeout, True, *args)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\asyncpg\connect_utils.py", line 831, in __connect_addr
+    await compat.wait_for(connected, timeout=timeout)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\asyncpg\compat.py", line 56, in wait_for
+    return await asyncio.wait_for(fut, timeout)
+  File "C:\Users\larik\AppData\Local\Programs\Python\Python310\lib\asyncio\tasks.py", line 447, in wait_for
+    return fut.result()
+asyncpg.exceptions.ConnectionDoesNotExistError: connection was closed in the middle of operation
+ERROR:asyncio:Task exception was never retrieved
+future: <Task finished name='Task-34' coro=<Dispatcher._process_polling_updates() done, defined at C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py:407> exception=ConnectionDoesNotExistError('connection was closed in the middle of operation')>
+Traceback (most recent call last):
+  File "C:\Users\larik\AppData\Local\Programs\Python\Python310\lib\asyncio\windows_events.py", line 480, in finish_recv
+    return ov.getresult()
+OSError: [WinError 64] Указанное сетевое имя более недоступно
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\larik\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 282, in _loop_reading
+    length = fut.result()
+  File "C:\Users\larik\AppData\Local\Programs\Python\Python310\lib\asyncio\windows_events.py", line 812, in _poll
+    value = callback(transferred, key, ov)
+  File "C:\Users\larik\AppData\Local\Programs\Python\Python310\lib\asyncio\windows_events.py", line 484, in finish_recv
+    raise ConnectionResetError(*exc.args)
+ConnectionResetError: [WinError 64] Указанное сетевое имя более недоступно
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 415, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 235, in process_updates
+    return await asyncio.gather(*tasks)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 283, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\roles\manager.py", line 110, in confirmation_handler
+    await start_reviews(order_id)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\orders\start.py", line 6, in start_reviews
+    order_reviews = await reviews_db.get_reviews(order_id=order_id)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\db\orders.py", line 28, in get_reviews
+    conn = await self.connection()
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\db\orders.py", line 11, in connection
+    return await pg.connect(user=user, password=password, host=host, port=port, database=database)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\asyncpg\connection.py", line 2092, in connect
+    return await connect_utils._connect(
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\asyncpg\connect_utils.py", line 881, in _connect
+    return await _connect_addr(
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\asyncpg\connect_utils.py", line 773, in _connect_addr
+    return await __connect_addr(params, timeout, True, *args)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\asyncpg\connect_utils.py", line 831, in __connect_addr
+    await compat.wait_for(connected, timeout=timeout)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\asyncpg\compat.py", line 56, in wait_for
+    return await asyncio.wait_for(fut, timeout)
+  File "C:\Users\larik\AppData\Local\Programs\Python\Python310\lib\asyncio\tasks.py", line 447, in wait_for
+    return fut.result()
+asyncpg.exceptions.ConnectionDoesNotExistError: connection was closed in the middle of operation
+WARNING:aiogram:Goodbye!
+ERROR:asyncio:Task exception was never retrieved
+future: <Task finished name='Task-37' coro=<Dispatcher._process_polling_updates() done, defined at C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py:407> exception=ConnectionDoesNotExistError('connection was closed in the middle of operation')>
+Traceback (most recent call last):
+  File "C:\Users\larik\AppData\Local\Programs\Python\Python310\lib\asyncio\windows_events.py", line 480, in finish_recv
+    return ov.getresult()
+OSError: [WinError 64] Указанное сетевое имя более недоступно
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\larik\AppData\Local\Programs\Python\Python310\lib\asyncio\proactor_events.py", line 282, in _loop_reading
+    length = fut.result()
+  File "C:\Users\larik\AppData\Local\Programs\Python\Python310\lib\asyncio\windows_events.py", line 812, in _poll
+    value = callback(transferred, key, ov)
+  File "C:\Users\larik\AppData\Local\Programs\Python\Python310\lib\asyncio\windows_events.py", line 484, in finish_recv
+    raise ConnectionResetError(*exc.args)
+ConnectionResetError: [WinError 64] Указанное сетевое имя более недоступно
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 415, in _process_polling_updates
+    for responses in itertools.chain.from_iterable(await self.process_updates(updates, fast)):
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 235, in process_updates
+    return await asyncio.gather(*tasks)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\dispatcher.py", line 283, in process_update
+    return await self.callback_query_handlers.notify(update.callback_query)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\aiogram\dispatcher\handler.py", line 117, in notify
+    response = await handler_obj.handler(*args, **partial_data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\roles\manager.py", line 109, in confirmation_handler
+    await add_new_reviews(data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\utils\add_reviews_funcs.py", line 20, in add_new_reviews
+    order_id = await orders_db.new_order(data)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\db\orders.py", line 17, in new_order
+    conn = await self.connection()
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\db\orders.py", line 11, in connection
+    return await pg.connect(user=user, password=password, host=host, port=port, database=database)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\asyncpg\connection.py", line 2092, in connect
+    return await connect_utils._connect(
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\asyncpg\connect_utils.py", line 881, in _connect
+    return await _connect_addr(
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\asyncpg\connect_utils.py", line 773, in _connect_addr
+    return await __connect_addr(params, timeout, True, *args)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\asyncpg\connect_utils.py", line 831, in __connect_addr
+    await compat.wait_for(connected, timeout=timeout)
+  File "C:\Users\larik\PycharmProjects\Avito_FeedBacks_Bot\venv\lib\site-packages\asyncpg\compat.py", line 56, in wait_for
+    return await asyncio.wait_for(fut, timeout)
+  File "C:\Users\larik\AppData\Local\Programs\Python\Python310\lib\asyncio\tasks.py", line 447, in wait_for
+    return fut.result()
+asyncpg.exceptions.ConnectionDoesNotExistError: connection was closed in the middle of operation
+WARNING:aiogram:Goodbye!
+WARNING:aiogram:Goodbye!
+WARNING:aiogram:Goodbye!
+WARNING:aiogram:Goodbye!
+WARNING:aiogram:Goodbye!
+WARNING:aiogram:Goodbye!
+WARNING:aiogram:Goodbye!

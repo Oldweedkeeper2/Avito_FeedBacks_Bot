@@ -1,0 +1,55 @@
+{
+    "mail": "AndoimGavrilov671@gmail.com",
+    "password": "ad5jQClii5IC",
+    "site": "https://www.avito.ru/moskva/detskaya_odezhda_i_obuv/romper_dlya_devochki_2894148448",
+    "review_text": "У меня девочка 5 лет, ромпер подошёл!",
+    "ip": "",
+    "port": "",
+    "proxy_username": "",
+    "proxy_password": "",
+    "acc_status": "OPEN",
+    "screen": {
+        "width": 1280,
+        "height": 720
+    },
+    "errors": [
+        "Proxy checking error"
+    ],
+    "photo_link": "https://50.img.avito.st/image/1/1.QkeTDba47q6lpCyrm3ByRqGv7KgtrGym5ansrCOk5qQl.aFs7nIE-24TRzXj8xMzvwOeld-mrvxzerReuinElloM",
+    "cut_photo_link": "https://50.img.avito.st/image/1/1.QkeTDba",
+    "user_id": "2894148448",
+    "item_text": "Ромпер для девочки",
+    "item_price": "3 000",
+    "review_awaited": {
+        "review_awaited_0": {
+            "user_title": "Salim-Auto",
+            "item_text": "Рамки на номера авто",
+            "prise_text": "200 ₽"
+        },
+        "review_awaited_1": {
+            "user_title": "Artur Raisov",
+            "item_text": "Создание бота на Python",
+            "prise_text": "20 000 ₽"
+        },
+        "review_awaited_2": {
+            "user_title": "Тимур Псеуш",
+            "item_text": "Авитолог / Услуги Авитолога",
+            "prise_text": "3 000 ₽"
+        }
+    },
+    "review_posted": {
+        "review_posted_0": {
+            "review_status": "Отзыв отклонён системой, которая борется с накрутками.",
+            "review_stage": "Сделка состоялась: «Рамки на номера авто»",
+            "review_item": "Рамки на номера авто",
+            "review_text": "РАМКИ это нечо! просто огонь!"
+        },
+        "review_posted_1": {
+            "review_status": "None",
+            "review_stage": "Сделка состоялась: «Ромпер для девочки»",
+            "review_item": "Ромпер для девочки",
+            "review_text": "У меня девочка 5 лет, ромпер поошёл!"
+        }
+    },
+    "phone_status": "временный"
+}
