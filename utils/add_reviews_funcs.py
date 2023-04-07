@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 from loguru import logger
 
-from avito_reviewer.main import start, reviewer
+from avito_runner import start, reviewer
 from db.orders import ReviewsDB, OrdersDB
 
 reviews_db = ReviewsDB()

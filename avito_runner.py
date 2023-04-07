@@ -5,15 +5,15 @@ from loguru import logger
 from playwright.async_api import Playwright
 from playwright.async_api import async_playwright
 
-from .avito.auth import first_login, login_with_cookies
-from .avito.cookeis_commander import save_session, load_session
-from .avito.error_logger import error_log
-from .avito.mouse import emulate_mouse_movement
-from .avito.parse import parse_page
-from .avito.phone_finder import phone_checker
-from .avito.profile_commander import check_contact_snippet
-from .avito.proxy import check_ip_address, create_proxy_settings
-from .avito.reviews import set_review
+from avito.auth import first_login, login_with_cookies
+from avito.cookeis_commander import save_session, load_session
+from avito.error_logger import error_log
+from avito.mouse import emulate_mouse_movement
+from avito.parse import parse_page
+from avito.phone_finder import phone_checker
+from avito.profile_commander import check_contact_snippet
+from avito.proxy import check_ip_address, create_proxy_settings
+from avito.reviews import set_review
 
 
 def get_random_viewport_size():
@@ -67,7 +67,7 @@ async def main(mail: str, password: str, site: str, review_text: str, ip: str, p
         await error_log(data, 'Proxy checking error')
 
     try:
-        await load_session(context, 'session_data.json')
+        await load_session(context, 'avito_reviewer/session_data.json')
         logger.info('Session data loaded')
     except Exception as e:
         print(e)
@@ -115,7 +115,7 @@ async def start(mail: str, password: str, site: str, review_text: str, ip: str, 
                                                   proxy_password, p,
                                                   user_agent)
         await phone_checker(page, data)  # подготовка к отзыву, смотрим телефон
-        await save_session(context, 'session_data.json')  # подгружаем сессию из бд, в формате json
+        await save_session(context, 'avito_reviewer/session_data.json')  # подгружаем сессию из бд, в формате json
         print(data)
         # await set_review_status('YANKE GO HOME')
         return data
@@ -128,7 +128,7 @@ async def reviewer(mail: str, password: str, site: str, review_text: str, ip: st
                                                   proxy_password, p,
                                                   user_agent)
         await set_review(context, page, data)  # оставляем отзыв
-        await save_session(context, 'session_data.json')
+        await save_session(context, 'avito_reviewer/session_data.json')
         # await set_review_status('YANKE GO HOME')
         print(data)
         return data

@@ -3,7 +3,7 @@ import json
 
 # пока что это всё работает через файлы, но надеюсь потом прикручу бд
 async def save_cookies(context, filename: str):
-
+    # await add_cookies
     cookies = await context.cookies()
     with open(filename, 'w') as f:
         f.write(json.dumps(cookies))
