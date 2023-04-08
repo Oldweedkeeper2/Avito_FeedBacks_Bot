@@ -50,8 +50,10 @@ async def phone_checker(page, data):
             textarea = await page.query_selector('[data-marker="reply/input"]')
             for word in data['send_message'].split(' '):
                 await writer(textarea, word)
-        await emulate_mouse_movement(page, 3)
+        await asyncio.sleep(3)
+        return
 
 
     except:
         await error_log(data, 'Не удалось нажать на кнопку "Открыть телефон"')
+        return

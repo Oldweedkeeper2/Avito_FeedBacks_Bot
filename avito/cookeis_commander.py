@@ -7,9 +7,9 @@ orders_db = OrdersDB()
 
 
 async def save_cookies(data, context, cookies_name):
-    cookies = await context.cookies()
-    state = await context.storage_state()
     try:
+        cookies = await context.cookies()
+        state = await context.storage_state()
         if cookies_name == 'session':
             await reviews_db.add_cookies(number=data['number'], session_cookies=state)
         elif cookies_name == 'google':

@@ -106,12 +106,12 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
         print(e, '5')
         await error_log(data, 'Error emulate_mouse_movement')
 
-    # try:
-    #     await check_contact_snippet(page, data)  # проверяем ждущие отзывы (вынести в отдельную функцию
-    #
-    # except Exception as e:
-    #     print(e, '6')
-    #     await error_log(data, 'Error check_contact_snippet')
+    try:
+        await check_contact_snippet(page, data)  # проверяем ждущие отзывы (вынести в отдельную функцию
+
+    except Exception as e:
+        print(e, '6')
+        await error_log(data, 'Error check_contact_snippet')
 
     return browser, context, page, data
 
@@ -123,16 +123,12 @@ async def start(number, mail: str, password: str, site: str, review_text: str, i
                                                   proxy_username,
                                                   proxy_password, p,
                                                   user_agent)
-        try:
-            await check_contact_snippet(page, data)  # проверяем ждущие отзывы (вынести в отдельную функцию
 
-        except Exception as e:
-            print(e, '6')
-            await error_log(data, 'Error check_contact_snippet')
 
         await phone_checker(page, data)  # подготовка к отзыву, смотрим телефон
 
         # закинуть это в отдельную функцию, мб даже просто в main
+        print(123123)
         if len(data['errors']) > 5:
             logger.error("Too many errors")
             await reviews_db.update_status(number=data['number'], status_id=2)
@@ -153,13 +149,6 @@ async def reviewer(number, mail: str, password: str, site: str, review_text: str
         browser, context, page, data = await main(number, mail, password, site, review_text, ip, port, proxy_username,
                                                   proxy_password, p,
                                                   user_agent)
-
-        # try:
-        #     await check_contact_snippet(page, data)  # проверяем ждущие отзывы (вынести в отдельную функцию
-        #     input('qq')
-        # except Exception as e:
-        #     print(e, '6')
-        #     await error_log(data, 'Error check_contact_snippet')
 
         await set_review(context, page, data)  # оставляем отзыв
 

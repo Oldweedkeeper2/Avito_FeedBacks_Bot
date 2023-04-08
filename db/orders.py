@@ -129,6 +129,7 @@ class ReviewsDB(DB):
                 )
         finally:
             await conn.close()
+            return
 
     async def get_cookies(self, number):
         conn = await self.connection()

@@ -73,9 +73,17 @@ async def add_review(order_id, order_review_id):
 
     avito_data = None
     # try:
-    #     avito_data = await start(number, mail, password, site, review_text, ip, port, proxy_username, proxy_password,
-    #                              user_agent)
+        # avito_data = await start(number, mail, password, site, review_text, ip, port, proxy_username, proxy_password,
+        #                          user_agent)
+    await asyncio.create_task(
+        start(number, mail, password, site, review_text, ip, port, proxy_username, proxy_password,
+              user_agent))
+    await asyncio.sleep(3)
+    await asyncio.create_task(
+        reviewer(number, mail, password, site, review_text, ip, port, proxy_username, proxy_password,
+                 user_agent))
     #     logger.info(avito_data)
+    #     print(avito_data)
     #     await asyncio.to_thread(print, avito_data)
     # except Exception as e:
     #     logger.error(e)
@@ -89,23 +97,23 @@ async def add_review(order_id, order_review_id):
     #         await asyncio.sleep(1)
     #         logger.info(f'Phone Checker finished without errors')
 
-    print('ждём ревер')
-    avito_data = await reviewer(number, mail, password, site, review_text, ip, port, proxy_username,
-                                proxy_password,
-                                user_agent)
-    logger.error(rf"Find {len(avito_data['errors'])} errors")
+    # print('ждём ревер')
+    # avito_data = await reviewer(number, mail, password, site, review_text, ip, port, proxy_username,
+    #                             proxy_password,
+    #                             user_agent)
+    # logger.error(rf"Find {len(avito_data['errors'])} errors")
 
-    # try:
-    #         # delay_minutes = random.randint(1,1)
-    #         # # Устанавливаем задержку перед запуском задачи
-    #         # await asyncio.sleep(delay_minutes * 60)
-    #         print('ждём ревер')
-    #         avito_data = await reviewer(number, mail, password, site, review_text, ip, port, proxy_username,
-    #                                     proxy_password,
-    #                                     user_agent)
-    #         logger.error(rf"Find {len(avito_data['errors'])} errors")
-    # except Exception as e:
-    #     logger.error(e)
+    try:
+        delay_minutes = random.randint(1, 1)
+        # Устанавливаем задержку перед запуском задачи
+        await asyncio.sleep(delay_minutes * 60)
+        print('ждём ревер')
+        avito_data = await reviewer(number, mail, password, site, review_text, ip, port, proxy_username,
+                                    proxy_password,
+                                    user_agent)
+        logger.error(rf"Find {len(avito_data['errors'])} errors")
+    except Exception as e:
+        logger.error(e)
 
 # async def get_random_review_on_priority():
 #     reviews =
