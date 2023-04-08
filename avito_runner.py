@@ -37,7 +37,7 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
     await create_proxy_settings(ip, port, proxy_username, proxy_password)
     size = get_random_viewport_size()
     browser_type = p.firefox
-    browser = await browser_type.launch(headless=True, timeout=50000)
+    browser = await browser_type.launch(headless=False, timeout=50000)
     context = await browser.new_context(user_agent=user_agent, viewport=size)
     page = await context.new_page()
     width, height = await page.evaluate("() => [window.innerWidth, window.innerHeight]")
@@ -132,17 +132,18 @@ async def start(number, mail: str, password: str, site: str, review_text: str, i
 
         await phone_checker(page, data)  # подготовка к отзыву, смотрим телефон
 
+        # закинуть это в отдельную функцию, мб даже просто в main
         if len(data['errors']) > 5:
             logger.error("Too many errors")
             await reviews_db.update_status(number=data['number'], status_id=2)
             return
-        try:
-            await save_cookies(data=data, context=context,
-                               cookies_name='session')  # загружаем сессию в бд, в формате json
-        except Exception as e:
-            await error_log(data, f'Error saving data {e}')
-        print(data)
-        return data
+    try:
+        await save_cookies(data=data, context=context,
+                           cookies_name='session')  # загружаем сессию в бд, в формате json
+    except Exception as e:
+        await error_log(data, f'Error saving data {e}')
+    print(data)
+    return data
 
 
 async def reviewer(number, mail: str, password: str, site: str, review_text: str, ip: str, port: str,
@@ -152,18 +153,48 @@ async def reviewer(number, mail: str, password: str, site: str, review_text: str
         browser, context, page, data = await main(number, mail, password, site, review_text, ip, port, proxy_username,
                                                   proxy_password, p,
                                                   user_agent)
+
+        # try:
+        #     await check_contact_snippet(page, data)  # проверяем ждущие отзывы (вынести в отдельную функцию
+        #     input('qq')
+        # except Exception as e:
+        #     print(e, '6')
+        #     await error_log(data, 'Error check_contact_snippet')
+
         await set_review(context, page, data)  # оставляем отзыв
+
         if len(data['errors']) > 5:
             logger.error("Too many errors")
             await reviews_db.update_status(number=data['number'], status_id=2)
             return
-        try:
-            await save_cookies(data=data, context=context,
-                               cookies_name='session')  # загружаем сессию в бд, в формате json
-        except Exception as e:
-            await error_log(data, f'Error saving data {e}')
-        print(data)
-        return data
+    try:
+        await save_cookies(data=data, context=context,
+                           cookies_name='session')  # загружаем сессию в бд, в формате json
+    except Exception as e:
+        await error_log(data, f'Error saving data {e}')
+    print(data)
+    return data
+
+
+async def parse_profile_link(number, mail: str, password: str, site: str, review_text: str, ip: str, port: str,
+                             proxy_username: str,
+                             proxy_password: str, user_agent: str):
+    async with async_playwright() as p:
+        browser, context, page, data = await main(number, mail, password, site, review_text, ip, port, proxy_username,
+                                                  proxy_password, p,
+                                                  user_agent)
+
+        if len(data['errors']) > 5:
+            logger.error("Too many errors")
+            await reviews_db.update_status(number=data['number'], status_id=2)
+            return
+    try:
+        await save_cookies(data=data, context=context,
+                           cookies_name='session')  # загружаем сессию в бд, в формате json
+    except Exception as e:
+        await error_log(data, f'Error saving data {e}')
+    print(data)
+    return data
 
 # if __name__ == '__main__':
 #     mail = "AndoimGavrilov671@gmail.com"
