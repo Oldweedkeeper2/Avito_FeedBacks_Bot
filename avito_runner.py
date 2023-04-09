@@ -10,7 +10,6 @@ from avito.cookeis_commander import save_cookies, load_cookies
 from avito.error_logger import error_log
 from avito.mouse import emulate_mouse_movement
 from avito.parse import parse_page
-from avito.phone_finder import phone_checker
 from avito.profile_commander import check_contact_snippet
 from avito.proxy import check_ip_address, create_proxy_settings
 from avito.reviews import set_review
@@ -60,8 +59,8 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
             logger.info('Browser launched')
         else:
             raise
-    except:
-        await error_log(data, 'Error browser launched')
+    except Exception as e:
+        await error_log(data, f'Error browser launched, {e}')
 
     try:
         session_ip = await check_ip_address(ip)
@@ -69,27 +68,24 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
             logger.info('Proxy launched successfully')
         else:
             raise
-    except:
-        await error_log(data, 'Proxy checking error')
+    except Exception as e:
+        await error_log(data, f'Proxy checking error, {e}')
 
     try:
         await load_cookies(data, context)
         logger.info('Session data loaded (session, google, avito)')
     except Exception as e:
-        print(e, '1')
-        await error_log(data, 'Error setting session state')
+        await error_log(data, 'fError setting session state, {e}')
 
     try:
         await login_with_cookies(data, context)  # логин по куки
     except Exception as e:
-        print(e, '2')
-        await error_log(data, 'Error with login_with_cookies')
+        await error_log(data, f'Error with login_with_cookies, {e}')
 
     try:
         await first_login(data, context, page)  # логин по гуглу
     except Exception as e:
-        print(e, '3')
-        await error_log(data, 'Error with first_login')
+        await error_log(data, f'Error with first_login, {e}')
 
     # input('Press Enter to continue')
     await asyncio.sleep(4)
@@ -97,108 +93,74 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
         await parse_page(page, data)  # парсим страницу
 
     except Exception as e:
-        print(e, '4')
-        await error_log(data, 'Error page parsing')
+        await error_log(data, f'Error page parsing, {e}')
 
     try:
         await emulate_mouse_movement(page, duration=4)  # эмулируем человеческую мышь
     except Exception as e:
-        print(e, '5')
-        await error_log(data, 'Error emulate_mouse_movement')
+        await error_log(data, f'Error emulate_mouse_movement, {e}')
 
     try:
         await check_contact_snippet(page, data)  # проверяем ждущие отзывы (вынести в отдельную функцию
 
     except Exception as e:
-        print(e, '6')
-        await error_log(data, 'Error check_contact_snippet')
+        await error_log(data, f'Error check_contact_snippet, {e}')
 
     return browser, context, page, data
 
 
 async def start(number, mail: str, password: str, site: str, review_text: str, ip: str, port: str, proxy_username: str,
-                proxy_password: str, user_agent: str):
+                proxy_password: str, user_agent: str, only_parse=False):
     async with async_playwright() as p:
         browser, context, page, data = await main(number, mail, password, site, review_text, ip, port,
                                                   proxy_username,
                                                   proxy_password, p,
-                                                  user_agent)
-
-
-        await phone_checker(page, data)  # подготовка к отзыву, смотрим телефон
+                                                  user_agent)  # ошибки обрабатываются внутри
+        if not only_parse:
+            # await phone_checker(page, data)  # подготовка к отзыву, смотрим телефон
+            try:
+                if not only_parse:  # код для проверки обработки ошибок
+                    raise
+                delay_minutes = random.randint(5, 5)  # вот здесь изменять время задержки
+                # Устанавливаем задержку перед запуском задачи
+                await asyncio.sleep(delay_minutes * 60)
+                await set_review(context, page, data)  # оставляем отзыв ошибки обрабатываются внутри
+            except Exception as e:
+                logger.error(e)
+                await reviews_db.update_status(number=data['number'], status_id=3)
 
         # закинуть это в отдельную функцию, мб даже просто в main
         print(123123)
         if len(data['errors']) > 5:
             logger.error("Too many errors")
-            await reviews_db.update_status(number=data['number'], status_id=2)
-            return
-    try:
-        await save_cookies(data=data, context=context,
-                           cookies_name='session')  # загружаем сессию в бд, в формате json
-    except Exception as e:
-        await error_log(data, f'Error saving data {e}')
-    print(data)
+            await reviews_db.update_status(number=data['number'], status_id=3)
+            raise
+        try:
+            await save_cookies(data=data, context=context,
+                               cookies_name='session')  # загружаем сессию в бд, в формате json
+        except Exception as e:
+            await error_log(data, f'Error saving data, {e}')
     return data
 
-
-async def reviewer(number, mail: str, password: str, site: str, review_text: str, ip: str, port: str,
-                   proxy_username: str,
-                   proxy_password: str, user_agent: str):
-    async with async_playwright() as p:
-        browser, context, page, data = await main(number, mail, password, site, review_text, ip, port, proxy_username,
-                                                  proxy_password, p,
-                                                  user_agent)
-
-        await set_review(context, page, data)  # оставляем отзыв
-
-        if len(data['errors']) > 5:
-            logger.error("Too many errors")
-            await reviews_db.update_status(number=data['number'], status_id=2)
-            return
-    try:
-        await save_cookies(data=data, context=context,
-                           cookies_name='session')  # загружаем сессию в бд, в формате json
-    except Exception as e:
-        await error_log(data, f'Error saving data {e}')
-    print(data)
-    return data
-
-
-async def parse_profile_link(number, mail: str, password: str, site: str, review_text: str, ip: str, port: str,
-                             proxy_username: str,
-                             proxy_password: str, user_agent: str):
-    async with async_playwright() as p:
-        browser, context, page, data = await main(number, mail, password, site, review_text, ip, port, proxy_username,
-                                                  proxy_password, p,
-                                                  user_agent)
-
-        if len(data['errors']) > 5:
-            logger.error("Too many errors")
-            await reviews_db.update_status(number=data['number'], status_id=2)
-            return
-    try:
-        await save_cookies(data=data, context=context,
-                           cookies_name='session')  # загружаем сессию в бд, в формате json
-    except Exception as e:
-        await error_log(data, f'Error saving data {e}')
-    print(data)
-    return data
-
-# if __name__ == '__main__':
-#     mail = "AndoimGavrilov671@gmail.com"
-#     password = "ad5jQClii5IC"
-#     site = 'https://www.avito.ru/moskva/detskaya_odezhda_i_obuv/romper_dlya_devochki_2894148448'
-#     review_text = 'У меня девочка 5 лет, ромпер подошёл!'
 #
-#     ip = ''
-#     port = ''
-#     proxy_username = ''
-#     proxy_password = ''
+# async def reviewer(number, mail: str, password: str, site: str, review_text: str, ip: str, port: str,
+#                    proxy_username: str,
+#                    proxy_password: str, user_agent: str):
+#     async with async_playwright() as p:
+#         browser, context, page, data = await main(number, mail, password, site, review_text, ip, port, proxy_username,
+#                                                   proxy_password, p,
+#                                                   user_agent)
 #
-#     user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/109.0'
-#     # user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36'
+#         await set_review(context, page, data)  # оставляем отзыв
 #
-#     asyncio.run(start(mail, password, site, review_text, ip, port, proxy_username, proxy_password, user_agent))
-#
-#     # asyncio.run(reviewer(mail, password, site, review_text, ip, port, proxy_username, proxy_password, user_agent))
+#         if len(data['errors']) > 5:
+#             logger.error("Too many errors")
+#             await reviews_db.update_status(number=data['number'], status_id=2)
+#             return
+#         try:
+#             await save_cookies(data=data, context=context,
+#                                cookies_name='session')  # загружаем сессию в бд, в формате json
+#         except Exception as e:
+#             await error_log(data, f'Error saving data {e}')
+#     print(data)
+#     return data

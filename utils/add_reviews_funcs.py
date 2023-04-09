@@ -1,15 +1,42 @@
 import asyncio
+import json
 import random
 from datetime import datetime, timedelta
 
 import pandas as pd
 from loguru import logger
 
-from avito_runner import start, reviewer
+from avito_runner import start
 from db.orders import ReviewsDB, OrdersDB
 
 reviews_db = ReviewsDB()
 orders_db = OrdersDB()
+
+
+# правильное форматирование прокси при добавлении
+#
+def parse_proxy_string(proxy_str):
+    parts = proxy_str.split(":")
+    ip = parts[0]
+    port = parts[1]
+    proxy_username = parts[2]
+    proxy_password = parts[3]
+    return {
+        "ip": ip,
+        "port": port,
+        "username": proxy_username,
+        "password": proxy_password
+    }
+
+
+# правильное форматирование прокси при фетче из бд
+#
+def format_proxy(proxy_dict):
+    ip = proxy_dict.get("ip")
+    port = proxy_dict.get("port")
+    proxy_username = proxy_dict.get("username")
+    proxy_password = proxy_dict.get("password")
+    return f"{ip}:{port}:{proxy_username}:{proxy_password}"
 
 
 def create_review():
@@ -37,22 +64,28 @@ def is_avaliable_link(link):
     return True
 
 
-def get_profile_link_from_product_link(product_link):
+def get_profile_link_from_product_link(
+        product_link):
+    # cюда просто добавить выбор пользователя с минимальным reviews_count или новые,
+    # чтобы их прогревать и вместе с этим парсить account_id.
     return 'https://8285995'
 
 
 async def add_review(order_id, order_review_id):
     global avito_data
-    mail = "AndoimGavrilov671@gmail.com"
-    password = "ad5jQClii5IC"
-    site = 'https://www.avito.ru/krasnodar/noutbuki/macbook_pro_2018_touch_bar_i516gb256gb_2935942971'
-    review_text = 'просто бомбовый MacBook Pro 2018, вай брат, что за пушка, а не машина '
-
-    ip = '77.91.91.137'
-    port = '63910'
-    proxy_username = 'DjYgvRek'
-    proxy_password = 'jCcfW5CL'
     number = '89185863704'
+    account_id = '2715884854'
+
+    # mail = "AndoimGavrilov671@gmail.com"
+    # password = "ad5jQClii5IC"
+    site = 'https://www.avito.ru/sevastopol/odezhda_obuv_aksessuary/podkraduli_kefteme_2715884854?slocation=633540'
+    review_text = 'спасибо за кросовки, мне оочень понравились эти подкрадули). Возможно возьму что-то ещё у этого продавца, вроде норм всё'
+    # proxy = format_proxy(await reviews_db.get_proxy_for_account(number))
+    avito_users = await reviews_db.get_users_without_account_id(account_id=account_id)
+    avito_user = random.choice(avito_users)
+    print('avito_user', avito_user)
+    proxy = json.loads(avito_user['proxy'])
+
     # вынести в отдельный файл и ли в бд кинуть. Можно даже привязать один ua к пользователю, чтобы не менять каждый раз
     # этот код можно заменить fake_useragent просто с external датой
     user_agents = [
@@ -66,54 +99,33 @@ async def add_review(order_id, order_review_id):
         'Mozilla/5.0 (Linux; U; Linux x86_64; ru-RU) Gecko/20130401 Firefox/72.8'
     ]
     user_agent = random.choice(user_agents)
+    only_parse = True
 
     # account_link = await orders_db.get_profile_link_from_order_id(order_id)
     # users = await reviews_db.get_users_without_account_link(account_link)
     # user = random.choice(users)
 
-    avito_data = None
-    # try:
-        # avito_data = await start(number, mail, password, site, review_text, ip, port, proxy_username, proxy_password,
-        #                          user_agent)
-    await asyncio.create_task(
-        start(number, mail, password, site, review_text, ip, port, proxy_username, proxy_password,
-              user_agent))
-    await asyncio.sleep(3)
-    await asyncio.create_task(
-        reviewer(number, mail, password, site, review_text, ip, port, proxy_username, proxy_password,
-                 user_agent))
-    #     logger.info(avito_data)
-    #     print(avito_data)
-    #     await asyncio.to_thread(print, avito_data)
-    # except Exception as e:
-    #     logger.error(e)
-    # await reviews_db.update_status(number=avito_data['number'], status_id=1)
-    # if avito_data is not None:
-    #
-    #     if len(avito_data['errors']) > 0:
-    #         await asyncio.sleep(1)
-    #         logger.info(f'Phone Checker finished with {len(avito_data["errors"])} errors: {avito_data["errors"]}')
-    #     else:
-    #         await asyncio.sleep(1)
-    #         logger.info(f'Phone Checker finished without errors')
-
-    # print('ждём ревер')
-    # avito_data = await reviewer(number, mail, password, site, review_text, ip, port, proxy_username,
-    #                             proxy_password,
-    #                             user_agent)
-    # logger.error(rf"Find {len(avito_data['errors'])} errors")
-
+    # запуск функции подготовки к отзыву
     try:
-        delay_minutes = random.randint(1, 1)
-        # Устанавливаем задержку перед запуском задачи
-        await asyncio.sleep(delay_minutes * 60)
-        print('ждём ревер')
-        avito_data = await reviewer(number, mail, password, site, review_text, ip, port, proxy_username,
-                                    proxy_password,
-                                    user_agent)
-        logger.error(rf"Find {len(avito_data['errors'])} errors")
+        avito_data = await start(number, avito_user['email'], avito_user['password'], site,
+                                 review_text, proxy['ip'], proxy['port'],
+                                 proxy['username'], proxy['password'],
+                                 user_agent, only_parse=only_parse)
+        print(avito_data)
+        await asyncio.sleep(3)
     except Exception as e:
         logger.error(e)
+        await reviews_db.update_status(number=avito_data['number'], status_id=3)
+
+    # регаем текущее время
+    now = datetime.now()
+    timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
+    date_time_obj = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S.%f')
+
+    await reviews_db.update_status(avito_data['number'], status_id=2)  # меняем статус работы в reviews_text на 2
+    await reviews_db.update_last_review(avito_data['number'], timestamp=date_time_obj)  # меняем timestamp в бд
+    await reviews_db.add_userbots_busy(avito_data['number'], avito_data['account_id'])  # добавляем номер акка в busy
+
 
 # async def get_random_review_on_priority():
 #     reviews =

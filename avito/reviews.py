@@ -172,29 +172,32 @@ async def find_cell(page, data):
                     await page.evaluate('window.scrollTo(0,document.body.scrollHeight)')
 
                     # Жмём на запись комментария
-                    text_area = await page.query_selector('textarea[data-marker="field/comment/textarea"]')
-                    await asyncio.sleep(4)
-                    # Набираем текст комментария
-                    # Если мы слишком долго ждём, то может слететь и куки и всё на свете (не уверен)
-                    await writer(text_area, data['review_text'])
                     # Ставим звёзды товару (цифра у star показывает количество звёзд)
                     stars = await page.query_selector('div[data-marker="field/score"]')
                     await stars.hover()
                     await asyncio.sleep(2)
                     await page.click('div[data-marker="field/score/star5"]')
+                    await asyncio.sleep(2)
+
                     # stars = await page.query_selector('div[data-marker="field/score"]')
+                    text_area = await page.query_selector('textarea[data-marker="field/comment/textarea"]')
+                    await asyncio.sleep(4)
+                    # Набираем текст комментария
+                    # Если мы слишком долго ждём, то может слететь и куки и всё на свете (не уверен)
+                    await writer(text_area, data['review_text'])
                     # await stars.click('div[data-marker="field/score/star5"]')
-                    # await asyncio.sleep(2)
                     await asyncio.sleep(3)
+                    input('stopping')
                     await page.click('button[data-marker="field/customButton/"]')
 
+                    await asyncio.sleep(3)
                     # выдаёт вторую кнопку, если продавец отрицает сделку
-                    # if await page.query_selector('button[data-marker="field/customButton/"]'):
-                    #     await page.click('[data-marker="field/score/star5"]')
-                    #     await page.click('button[data-marker="field/customButton/"]')
+                    if await page.query_selector('button[data-marker="field/customButton/"]'):
+                        await page.click('[data-marker="field/score/star5"]')
+                        await page.click('button[data-marker="field/customButton/"]')
 
                     # проверить на "Спасибо за отзыв"
-                    # class="styles-module-theme
+                    input('stopping2')
                     thx_element = await page.query_selector('div[class^="styles-module-theme-CRreZ"]')
                     thx_element_text = await thx_element.text_content()
 
@@ -220,15 +223,13 @@ async def set_review(context, page, data):
     try:
         await message_confirmation(page, data)
     except Exception as e:
-        print(e)
-        await error_log(data, f'Review link not found {e}')
+        await error_log(data, f'Review link not found, {e}')
 
     await emulate_mouse_movement(page, 3)
-
     try:
         page = await review_preparation(context, page, data)
         if page:
             await smart_search(page, data)
     except Exception as e:
-        print(e)
-        await error_log(data, 'Error submitting feedback')
+        await error_log(data, f'Error submitting feedback, {e}')
+        raise

@@ -13,7 +13,7 @@ class DB:
 
 class OrdersDB(DB):
 
-    async def new_order(self, data):
+    async def new_order(self, data):  # добавление нового заказа в orders
         conn = await self.connection()
         order_id = await conn.fetchval(
             "INSERT INTO orders(link, reviews_count, avito_profile_link, finish_date) VALUES($1, $2, $3, $4) RETURNING order_id",
@@ -31,13 +31,14 @@ class OrdersDB(DB):
 
 class ReviewsDB(DB):
 
-    async def get_users_without_account_id(self, id):
+    async def get_users_without_account_id(self,
+                                           account_id):  # выборка пользователей, которые не работали по-данному id человека.
         conn = await self.connection()
 
         try:
             query = "SELECT * FROM avito_users WHERE NOT EXISTS (SELECT * FROM userbots_accounts_busy " \
                     "WHERE number = avito_users.number AND account_id = $1)"
-            numbers = await conn.fetch(query, id)
+            numbers = await conn.fetch(query, account_id)
             return numbers
         finally:
             await conn.close()
@@ -59,7 +60,7 @@ class ReviewsDB(DB):
         finally:
             await conn.close()
 
-    async def update_review(self, order_id, order_review_id=None, phone=None, status=None):
+    async def update_review(self, order_id, order_review_id=None, phone=None, status=None):  # pylint: disable=T
         conn = await self.connection()
 
         try:
@@ -90,7 +91,7 @@ class ReviewsDB(DB):
         finally:
             await conn.close()
 
-    async def add_reviews(self, data):  #
+    async def add_reviews(self, data):  # добавить d reviews_text новые заказы (+1 к максимуму)
         conn = await self.connection()
         async with conn.transaction():
             order_review_id = await conn.fetchval('SELECT MAX(order_review_id) FROM reviews_texts WHERE order_id = $1',
@@ -103,8 +104,7 @@ class ReviewsDB(DB):
                 await conn.execute('INSERT INTO reviews_texts (order_id, order_review_id, text) VALUES ($1, $2, $3)',
                                    data['order_id'], order_review_id, text)
 
-
-    async def add_cookies(self, number, session_cookies=None, avito_cookies=None, google_cookies=None):
+    async def add_cookies(self, number, session_cookies=None, avito_cookies=None, google_cookies=None):  # добавить куки
         conn = await self.connection()
         try:
             if session_cookies is not None:
@@ -131,7 +131,7 @@ class ReviewsDB(DB):
             await conn.close()
             return
 
-    async def get_cookies(self, number):
+    async def get_cookies(self, number):  # получить куки
         conn = await self.connection()
         try:
             row = await conn.fetchrow(
@@ -160,3 +160,92 @@ class ReviewsDB(DB):
                 return None
         finally:
             await conn.close()
+
+    async def add_userbots_busy(self, number, account_id):
+        conn = await self.connection()
+        try:
+            if number is not None:
+                await conn.execute(
+                    "INSERT INTO userbots_accounts_busy (number, account_id) VALUES ($1, $2)",
+                    number, account_id
+                )
+            else:
+                return None
+        finally:
+            await conn.close()
+
+    # можно изменить следующие 4 функции на функцию update_userbots_profile, где ты будешь задавать то, что нужно изменить
+    # и другие параметры (но мб не сильно удобно)
+
+    async def check_problems_count(self, number):
+        conn = await self.connection()
+        try:
+            if number is not None:
+                await conn.execute(
+                    "SELECT problems FROM avito_users WHERE number=$1",
+                    number,
+                )
+        finally:
+            await conn.close()
+
+    async def update_reviews_count(self, number, count):
+        conn = await self.connection()
+        try:
+            if number is not None and count is not None:
+                await conn.execute(
+                    "UPDATE avito_users SET reviews_count=reviews_count+$2 WHERE number=$1",
+                    number, count
+                )
+        finally:
+            await conn.close()
+
+    async def update_problems_count(self, number, count):
+        conn = await self.connection()
+        try:
+            if number is not None and count is not None:
+                await conn.execute(
+                    "UPDATE avito_users SET problems=$2 WHERE number=$1",
+                    number, count
+                )
+        finally:
+            await conn.close()
+
+    async def update_last_review(self, number, timestamp):
+        conn = await self.connection()
+        try:
+            if number is not None and timestamp is not None:
+                await conn.execute(
+                    "UPDATE avito_users SET last_review=$2 WHERE number=$1",
+                    number, timestamp
+                )
+        finally:
+            await conn.close()
+
+    # 2 следующие функции про прокси
+    async def update_proxy_for_account(self, number, proxy):
+
+        conn = await self.connection()
+        try:
+            await conn.execute(
+                "UPDATE avito_users SET proxy=$2 WHERE number=$1",
+                number, json.dumps(proxy)
+            )
+        finally:
+            await conn.close()
+
+    async def get_proxy_for_account(self, number):
+
+        conn = await self.connection()
+        try:
+            proxy = await conn.fetchval(
+                "SELECT proxy FROM avito_users WHERE number=$1",
+                number
+            )
+            if proxy is not None:
+                return json.loads(proxy)
+            else:
+                return None
+        finally:
+            await conn.close()
+
+
