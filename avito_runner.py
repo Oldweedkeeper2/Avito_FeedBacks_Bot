@@ -75,7 +75,7 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
         await load_cookies(data, context)
         logger.info('Session data loaded (session, google, avito)')
     except Exception as e:
-        await error_log(data, 'fError setting session state, {e}')
+        await error_log(data, f'Error setting session state, {e}')
 
     try:
         await login_with_cookies(data, context)  # логин по куки

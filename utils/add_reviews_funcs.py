@@ -64,8 +64,7 @@ def is_avaliable_link(link):
     return True
 
 
-def get_profile_link_from_product_link(
-        product_link):
+def get_profile_link_from_product_link(product_link):
     # cюда просто добавить выбор пользователя с минимальным reviews_count или новые,
     # чтобы их прогревать и вместе с этим парсить account_id.
     return 'https://8285995'
