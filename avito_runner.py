@@ -36,7 +36,7 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
     await create_proxy_settings(ip, port, proxy_username, proxy_password)
     size = get_random_viewport_size()
     browser_type = p.firefox
-    browser = await browser_type.launch(headless=False, timeout=50000)
+    browser = await browser_type.launch(headless=True, timeout=50000)
     context = await browser.new_context(user_agent=user_agent, viewport=size)
     page = await context.new_page()
     width, height = await page.evaluate("() => [window.innerWidth, window.innerHeight]")

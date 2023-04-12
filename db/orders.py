@@ -16,14 +16,22 @@ class OrdersDB(DB):
     async def new_order(self, data):  # добавление нового заказа в orders
         conn = await self.connection()
         order_id = await conn.fetchval(
-            "INSERT INTO orders(link, reviews_count, avito_profile_link, finish_date) VALUES($1, $2, $3, $4) RETURNING order_id",
+            "INSERT INTO orders(link, reviews_count, avito_profile_id, finish_date) VALUES($1, $2, $3, $4) RETURNING order_id",
             data['link'], data['reviews_count'], data['profile_link'], data['finish_date'])
         return order_id
 
-    async def get_profile_link_from_order_id(self, order_id):  # профиль линк сюда
+    async def get_profile_id_from_order_id(self, order_id):  # профиль id сюда
         conn = await self.connection()
         try:
-            link = await conn.fetchval("SELECT avito_profile_link FROM orders WHERE order_id = $1", order_id)
+            id = await conn.fetchval("SELECT avito_profile_id FROM orders WHERE order_id = $1", order_id)
+            return id
+        finally:
+            await conn.close()
+
+    async def get_order(self, order_id):
+        conn = await self.connection()
+        try:
+            link = await conn.fetchval("SELECT link FROM orders WHERE order_id = $1", order_id)
             return link
         finally:
             await conn.close()
@@ -51,9 +59,9 @@ class ReviewsDB(DB):
             if order_id is not None:
                 if number is not None:
                     raise ValueError("Either order_id or number should be passed")
-                query += f" WHERE order_id = {order_id}"
+                query += f" WHERE order_id = {order_id}::text"
             elif number is not None:
-                query += f" WHERE number = {number}"
+                query += f" WHERE number = {number}::text"
             if status != 'all':
                 query += f" AND status_id = (SELECT status_id FROM statuses WHERE name = '{status}')"
             return await conn.fetch(query)
@@ -68,7 +76,7 @@ class ReviewsDB(DB):
                 query = f"UPDATE reviews_texts SET user_phone = '{phone}' WHERE order_id = {order_id}" \
                         f" AND order_review_id = {order_review_id}"
                 await conn.execute(query)
-                query = f"SELECT avito_profile_link FROM orders WHERE order_id = {order_id}"
+                query = f"SELECT avito_profile_id FROM orders WHERE order_id = {order_id}"
                 account_link = await conn.fetchval(query)
                 query = f"INSERT INTO userbots_accounts_busy (number, account_link) VALUES ('{phone}', '{account_link}')"
                 await conn.execute(query)

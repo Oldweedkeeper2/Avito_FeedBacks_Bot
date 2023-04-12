@@ -64,7 +64,7 @@ def is_avaliable_link(link):
     return True
 
 
-def get_profile_link_from_product_link(product_link):
+def get_profile_id_from_product_link(product_link):
     # cюда просто добавить выбор пользователя с минимальным reviews_count или новые,
     # чтобы их прогревать и вместе с этим парсить account_id.
     return 'https://8285995'
@@ -72,17 +72,15 @@ def get_profile_link_from_product_link(product_link):
 
 async def add_review(order_id, order_review_id):
     global avito_data
-    number = '89185863704'
-    account_id = '2715884854'
 
-    # mail = "AndoimGavrilov671@gmail.com"
-    # password = "ad5jQClii5IC"
-    site = 'https://www.avito.ru/sevastopol/odezhda_obuv_aksessuary/podkraduli_kefteme_2715884854?slocation=633540'
-    review_text = 'спасибо за кросовки, мне оочень понравились эти подкрадули). Возможно возьму что-то ещё у этого продавца, вроде норм всё'
-    # proxy = format_proxy(await reviews_db.get_proxy_for_account(number))
-    avito_users = await reviews_db.get_users_without_account_id(account_id=account_id)
+    account_id = await orders_db.get_profile_id_from_order_id(order_id)
+    avito_users = await reviews_db.get_users_without_account_id(account_id)
+    if not avito_users:
+        return
+    flag = True
     avito_user = random.choice(avito_users)
-    print('avito_user', avito_user)
+    reviews = await reviews_db.get_reviews(number=avito_user['number'])
+    site = await orders_db.get_order(order_id=order_id)
     proxy = json.loads(avito_user['proxy'])
 
     # вынести в отдельный файл и ли в бд кинуть. Можно даже привязать один ua к пользователю, чтобы не менять каждый раз
@@ -100,30 +98,28 @@ async def add_review(order_id, order_review_id):
     user_agent = random.choice(user_agents)
     only_parse = True
 
-    # account_link = await orders_db.get_profile_link_from_order_id(order_id)
-    # users = await reviews_db.get_users_without_account_link(account_link)
-    # user = random.choice(users)
-
     # запуск функции подготовки к отзыву
     try:
-        avito_data = await start(number, avito_user['email'], avito_user['password'], site,
-                                 review_text, proxy['ip'], proxy['port'],
+        avito_data = await start(avito_user['number'], avito_user['email'], avito_user['password'], site,
+                                 reviews[0]['text'], proxy['ip'], proxy['port'],
                                  proxy['username'], proxy['password'],
                                  user_agent, only_parse=only_parse)
         print(avito_data)
         await asyncio.sleep(3)
     except Exception as e:
         logger.error(e)
-        await reviews_db.update_status(number=avito_data['number'], status_id=3)
+        flag = False
+        await reviews_db.update_status(number=avito_user['number'], status_id=3)
 
     # регаем текущее время
-    now = datetime.now()
-    timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
-    date_time_obj = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S.%f')
+    if flag:
+        now = datetime.now()
+        timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
+        date_time_obj = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S.%f')
 
-    await reviews_db.update_status(avito_data['number'], status_id=2)  # меняем статус работы в reviews_text на 2
-    await reviews_db.update_last_review(avito_data['number'], timestamp=date_time_obj)  # меняем timestamp в бд
-    await reviews_db.add_userbots_busy(avito_data['number'], avito_data['account_id'])  # добавляем номер акка в busy
+        await reviews_db.update_status(avito_user['number'], status_id=2)  # меняем статус работы в reviews_text на 2
+        await reviews_db.update_last_review(avito_user['number'], timestamp=date_time_obj)  # меняем timestamp в бд
+        await reviews_db.add_userbots_busy(avito_user['number'], account_id)  # добавляем номер акка в busy
 
 
 # async def get_random_review_on_priority():
