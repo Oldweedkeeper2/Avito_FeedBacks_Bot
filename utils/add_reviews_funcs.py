@@ -64,22 +64,59 @@ def is_avaliable_link(link):
     return True
 
 
-def get_profile_id_from_product_link(product_link):
-    # cюда просто добавить выбор пользователя с минимальным reviews_count или новые,
-    # чтобы их прогревать и вместе с этим парсить account_id.
-    return 'https://8285995'
+# async def get_profile_id_from_product_link(order_id):
+#     global avito_data
+#
+#     # cюда просто добавить выбор пользователя с минимальным reviews_count или новые,
+#     # чтобы их прогревать и вместе с этим парсить account_id.
+#     account_id = await orders_db.get_profile_id_from_order_id(order_id)
+#     avito_users = await reviews_db.get_users_without_account_id(account_id)
+#     if not avito_users:
+#         return
+#     avito_user = min(avito_users, key=lambda x: x['reviews_count'])
+#     reviews = await reviews_db.get_reviews(number=avito_user['number'])
+#     site = await orders_db.get_order(order_id=order_id)
+#     proxy = json.loads(avito_user['proxy'])
+#
+#     # вынести в отдельный файл и ли в бд кинуть. Можно даже привязать один ua к пользователю, чтобы не менять каждый раз
+#     # этот код можно заменить fake_useragent просто с external датой
+#     user_agents = [
+#         "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/109.0",
+#         "Mozilla/5.0 (Macintosh; Intel Mac OS X 13.2; rv:109.0) Gecko/20100101 Firefox/109.0",
+#         "Mozilla/5.0 (X11; Linux i686; rv:109.0) Gecko/20100101 Firefox/109.0",
+#         "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/109.0",
+#         "Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:109.0) Gecko/20100101 Firefox/109.0",
+#         "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/109.0",
+#         "Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/109.0",
+#         'Mozilla/5.0 (Linux; U; Linux x86_64; ru-RU) Gecko/20130401 Firefox/72.8'
+#     ]
+#     user_agent = random.choice(user_agents)
+#
+#     # запуск функции подготовки к отзыву
+#     try:
+#         avito_data = await start(avito_user['number'], avito_user['email'], avito_user['password'], site,
+#                                  reviews[0]['text'], proxy['ip'], proxy['port'],
+#                                  proxy['username'], proxy['password'],
+#                                  user_agent, only_parse=True)
+#     except Exception as e:
+#         logger.error(e)
+#         await reviews_db.update_status(number=avito_user['number'], status_id=3)
+#     return avito_data['account_id']
 
 
 async def add_review(order_id, order_review_id):
     global avito_data
 
-    account_id = await orders_db.get_profile_id_from_order_id(order_id)
+    account_id = await orders_db.get_profile_id_from_order_id(order_id)  # получаем
     avito_users = await reviews_db.get_users_without_account_id(account_id)
+
     if not avito_users:
         return
-    flag = True
+
     avito_user = random.choice(avito_users)
-    reviews = await reviews_db.get_reviews(number=avito_user['number'])
+    reviews = await reviews_db.get_review(order_id=order_id, order_review_id=order_review_id)
+    print(reviews[0])
+    await reviews_db.update_review(order_id=order_id, order_review_id=order_review_id, phone=avito_user['number'])
     site = await orders_db.get_order(order_id=order_id)
     proxy = json.loads(avito_user['proxy'])
 
@@ -96,33 +133,30 @@ async def add_review(order_id, order_review_id):
         'Mozilla/5.0 (Linux; U; Linux x86_64; ru-RU) Gecko/20130401 Firefox/72.8'
     ]
     user_agent = random.choice(user_agents)
-    only_parse = True
 
     # запуск функции подготовки к отзыву
     try:
         avito_data = await start(avito_user['number'], avito_user['email'], avito_user['password'], site,
                                  reviews[0]['text'], proxy['ip'], proxy['port'],
                                  proxy['username'], proxy['password'],
-                                 user_agent, only_parse=only_parse)
-        print(avito_data)
+                                 user_agent)
         await asyncio.sleep(3)
     except Exception as e:
         logger.error(e)
-        flag = False
         await reviews_db.update_status(number=avito_user['number'], status_id=3)
+        return
 
     # регаем текущее время
-    if flag:
-        now = datetime.now()
-        timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
-        date_time_obj = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S.%f')
+    now = datetime.now()
+    timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
+    date_time_obj = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S.%f')
 
-        await reviews_db.update_status(avito_user['number'], status_id=2)  # меняем статус работы в reviews_text на 2
-        await reviews_db.update_last_review(avito_user['number'], timestamp=date_time_obj)  # меняем timestamp в бд
-        await reviews_db.add_userbots_busy(avito_user['number'], account_id)  # добавляем номер акка в busy
+    await reviews_db.update_status(avito_user['number'], status_id=2)  # меняем статус работы в reviews_text на 2
+    await reviews_db.update_last_review(avito_user['number'], timestamp=date_time_obj)  # меняем timestamp в бд
+    await reviews_db.add_userbots_busy(avito_user['number'], account_id)  # добавляем номер акка в busy
 
 
 # async def get_random_review_on_priority():
 #     reviews =
 
-asyncio.run(add_review(1, 2))
+asyncio.run(add_review(2, 9))

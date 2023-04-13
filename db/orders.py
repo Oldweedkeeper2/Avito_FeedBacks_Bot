@@ -52,6 +52,14 @@ class ReviewsDB(DB):
             await conn.close()
 
     async def get_reviews(self, *_, order_id=None, status='all', number=None):  # получить отзывы
+        """
+        :param _:
+        :param order_id: if number is None
+        :param status: optional
+        :param number: if order_id is None
+        :return: * from reviews_texts
+        """
+
         conn = await self.connection()
 
         try:
@@ -68,17 +76,28 @@ class ReviewsDB(DB):
         finally:
             await conn.close()
 
+    async def get_review(self, *_, order_id, order_review_id):  # получить отзывы
+        conn = await self.connection()
+
+        try:
+            query = "SELECT * FROM reviews_texts WHERE order_id = $1 AND order_review_id = $2"
+            res = await conn.fetch(query, order_id, order_review_id)
+        finally:
+            await conn.close()
+
+        return res
+
     async def update_review(self, order_id, order_review_id=None, phone=None, status=None):  # pylint: disable=T
         conn = await self.connection()
 
         try:
             if phone is not None:
-                query = f"UPDATE reviews_texts SET user_phone = '{phone}' WHERE order_id = {order_id}" \
+                query = f"UPDATE reviews_texts SET number = '{phone}' WHERE order_id = {order_id}" \
                         f" AND order_review_id = {order_review_id}"
                 await conn.execute(query)
                 query = f"SELECT avito_profile_id FROM orders WHERE order_id = {order_id}"
                 account_link = await conn.fetchval(query)
-                query = f"INSERT INTO userbots_accounts_busy (number, account_link) VALUES ('{phone}', '{account_link}')"
+                query = f"INSERT INTO userbots_accounts_busy (number, account_id) VALUES ('{phone}', '{account_link}')"
                 await conn.execute(query)
             elif status is not None:
                 query = f"UPDATE reviews_texts SET status_id = (SELECT status_id FROM statuses WHERE name = '{status}')" \

@@ -29,14 +29,14 @@ def get_random_viewport_size():
 
 async def main(number: str, mail: str, password: str, site: str, review_text: str, ip: str, port: str,
                proxy_username: str,
-               proxy_password: str, p: Playwright, user_agent: str):
+               proxy_password: str, p: Playwright, user_agent: str, only_parse: bool):
     if not ip or not port:
         raise Exception("Invalid proxy ip or port")
 
     await create_proxy_settings(ip, port, proxy_username, proxy_password)
     size = get_random_viewport_size()
     browser_type = p.firefox
-    browser = await browser_type.launch(headless=True, timeout=50000)
+    browser = await browser_type.launch(headless=False, timeout=50000)
     context = await browser.new_context(user_agent=user_agent, viewport=size)
     page = await context.new_page()
     width, height = await page.evaluate("() => [window.innerWidth, window.innerHeight]")
@@ -94,17 +94,17 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
 
     except Exception as e:
         await error_log(data, f'Error page parsing, {e}')
+    if not only_parse:
+        try:
+            await emulate_mouse_movement(page, duration=4)  # эмулируем человеческую мышь
+        except Exception as e:
+            await error_log(data, f'Error emulate_mouse_movement, {e}')
 
-    try:
-        await emulate_mouse_movement(page, duration=4)  # эмулируем человеческую мышь
-    except Exception as e:
-        await error_log(data, f'Error emulate_mouse_movement, {e}')
+        try:
+            await check_contact_snippet(page, data)  # проверяем ждущие отзывы (вынести в отдельную функцию
 
-    try:
-        await check_contact_snippet(page, data)  # проверяем ждущие отзывы (вынести в отдельную функцию
-
-    except Exception as e:
-        await error_log(data, f'Error check_contact_snippet, {e}')
+        except Exception as e:
+            await error_log(data, f'Error check_contact_snippet, {e}')
 
     return browser, context, page, data
 
@@ -112,16 +112,17 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
 async def start(number, mail: str, password: str, site: str, review_text: str, ip: str, port: str, proxy_username: str,
                 proxy_password: str, user_agent: str, only_parse=False):
     async with async_playwright() as p:
+        await reviews_db.update_status(number=number,
+                                       status_id=2)  # похер, пусть пока будет такой статус при заходе
         browser, context, page, data = await main(number, mail, password, site, review_text, ip, port,
                                                   proxy_username,
                                                   proxy_password, p,
-                                                  user_agent)  # ошибки обрабатываются внутри
+                                                  user_agent, only_parse)  # ошибки обрабатываются внутри
         if not only_parse:
+            print(1)
             # await phone_checker(page, data)  # подготовка к отзыву, смотрим телефон
             try:
-                if not only_parse:  # код для проверки обработки ошибок
-                    raise
-                delay_minutes = random.randint(5, 5)  # вот здесь изменять время задержки
+                delay_minutes = random.randint(1, 5)  # вот здесь изменять время задержки
                 # Устанавливаем задержку перед запуском задачи
                 await asyncio.sleep(delay_minutes * 60)
                 await set_review(context, page, data)  # оставляем отзыв ошибки обрабатываются внутри
@@ -129,8 +130,6 @@ async def start(number, mail: str, password: str, site: str, review_text: str, i
                 logger.error(e)
                 await reviews_db.update_status(number=data['number'], status_id=3)
 
-        # закинуть это в отдельную функцию, мб даже просто в main
-        print(123123)
         if len(data['errors']) > 5:
             logger.error("Too many errors")
             await reviews_db.update_status(number=data['number'], status_id=3)
