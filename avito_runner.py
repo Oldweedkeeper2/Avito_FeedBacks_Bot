@@ -60,6 +60,7 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
             raise
     except Exception as e:
         await error_log(data, f'Error browser launched, {e}')
+        raise
 
     try:
         session_ip = await check_ip_address(ip)
@@ -69,6 +70,7 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
             raise
     except Exception as e:
         await error_log(data, f'Proxy checking error, {e}')
+        raise
 
     try:
         await load_cookies(data, context)
@@ -81,7 +83,7 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
         await first_login(data, context, page)  # логин по гуглу
     except Exception as e:
         await error_log(data, f'Error with first_login, {e}')
-        return
+        raise
 
     # input('Press Enter to continue')
     await asyncio.sleep(4)
@@ -90,7 +92,7 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
 
     except Exception as e:
         await error_log(data, f'Error page parsing, {e}')
-        return
+        raise
     if not only_parse:
         try:
             await emulate_mouse_movement(page, duration=4)  # эмулируем человеческую мышь
@@ -125,6 +127,7 @@ async def start(number, mail: str, password: str, site: str, review_text: str, i
             except Exception as e:
                 logger.error(e)
                 await reviews_db.update_status(number=data['number'], status_id=3)
+                raise
 
         if len(data['errors']) > 5:
             logger.error("Too many errors")
@@ -135,5 +138,6 @@ async def start(number, mail: str, password: str, site: str, review_text: str, i
                                cookies_name='session')  # загружаем сессию в бд, в формате json
         except Exception as e:
             await error_log(data, f'Error saving data, {e}')
+            raise
     return data
 

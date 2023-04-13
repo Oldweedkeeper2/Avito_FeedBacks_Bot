@@ -25,7 +25,9 @@ async def add_reviews_handler(msg: Message, state: FSMContext):
     data = await state.get_data()
     data['profile_id'] = msg.text
     await state.update_data(data)
-    await msg.edit_text('Отправьте ссылку на товар или услугу.', reply_markup=None)
+    await msg.delete()
+    await bot.edit_message_text(chat_id=msg.from_user.id, message_id=data['worked_msg_id'],
+                        text='Отправьте ссылку на товар или услугу.', reply_markup=None)
     await AddReviews.link.set()
 
 
@@ -55,10 +57,9 @@ async def excel_handler(msg: Message, state: FSMContext):
         except:
             pass
     else:
-        file = await msg.document.download(destination_file=msg.document.file_name)
+        file = await msg.document.download(destination_file='excel.xlsx')
         try:
-            texts = get_column_data(file.name)
-            os.remove(file.name)
+            texts = get_column_data('excel.xlsx')
             if len(texts) > 0:
                 await bot.edit_message_text(text='Теперь укажи количество дней за которое нужно отправить все отзывы.',
                                             chat_id=msg.from_id,
@@ -132,6 +133,6 @@ async def current_feedback_handler(call: CallbackQuery, state: FSMContext):
 async def order_statistic(call: CallbackQuery, state: FSMContext):
     order = await orders_db.get_order(int(call.data.split('_')[-1]))
     text = f'Заказ №{order["order_id"]}\n' \
-           f'Отзывы - {order["current_count"]}/{order["reviews_count"]}' \
+           f'Отзывы - {order["current_count"]}/{order["reviews_count"]}\n' \
            f'Дата окончания - {order["finish_date"]}'
     await call.message.edit_text(text, reply_markup=back_to_current_orders_kb)

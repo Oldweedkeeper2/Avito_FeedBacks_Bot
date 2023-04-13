@@ -17,7 +17,8 @@ start_kb = InlineKeyboardMarkup(inline_keyboard=[
 async def current_orders_kb():
     orders_ids = await ordersDB.get_current_orders_ids()
     markup = InlineKeyboardMarkup(row_width=2)
-    for id in orders_ids:
+    for order_id in orders_ids:
+        id = order_id['order_id']
         markup.add(InlineKeyboardButton(text=str(id), callback_data=f'current_order_{id}'))
     return markup
 

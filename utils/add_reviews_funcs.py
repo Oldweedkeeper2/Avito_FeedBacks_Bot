@@ -50,7 +50,7 @@ def get_date(n):
 
 
 def get_column_data(file_path):
-    data = pd.read_excel(file_path, header=None)
+    data = pd.read_excel(file_path, engine='openpyxl', header=None)
     return data[0].tolist()
 
 

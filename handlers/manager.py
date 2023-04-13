@@ -13,4 +13,4 @@ def init_manager_handlers():
     dp.register_callback_query_handler(manager.confirmation_handler, state=manager_states.AddReviews.confirmation)
 
     dp.register_callback_query_handler(manager.current_feedback_handler, text='current_feedbacks')
-    dp.register_callback_query_handler(manager.order_statistic, lambda call: call.startswith('current_order_'))
+    dp.register_callback_query_handler(manager.order_statistic, lambda call: call.data.startswith('current_order_'))
