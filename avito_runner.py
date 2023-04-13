@@ -52,7 +52,6 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
                 acc_status='OPEN',
                 screen={'width': width, 'height': height},
                 errors=[])
-    await reviews_db.update_status(number=data['number'], status_id=1)
 
     try:
         if browser.is_connected():
@@ -108,16 +107,15 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
 
 
 async def start(number, mail: str, password: str, site: str, review_text: str, ip: str, port: str, proxy_username: str,
-                proxy_password: str, user_agent: str, only_parse=True):
+                proxy_password: str, user_agent: str, only_parse=False):
     async with async_playwright() as p:
         await reviews_db.update_status(number=number,
-                                       status_id=2)  # похер, пусть пока будет такой статус при заходе
+                                       status_id=1)  # похер, пусть пока будет такой статус при заходе
         browser, context, page, data = await main(number, mail, password, site, review_text, ip, port,
                                                   proxy_username,
                                                   proxy_password, p,
                                                   user_agent, only_parse)  # ошибки обрабатываются внутри
         if not only_parse:
-            print(1)
             # await phone_checker(page, data)  # подготовка к отзыву, смотрим телефон
             try:
                 delay_minutes = random.randint(1, 5)  # вот здесь изменять время задержки
@@ -139,25 +137,3 @@ async def start(number, mail: str, password: str, site: str, review_text: str, i
             await error_log(data, f'Error saving data, {e}')
     return data
 
-#
-# async def reviewer(number, mail: str, password: str, site: str, review_text: str, ip: str, port: str,
-#                    proxy_username: str,
-#                    proxy_password: str, user_agent: str):
-#     async with async_playwright() as p:
-#         browser, context, page, data = await main(number, mail, password, site, review_text, ip, port, proxy_username,
-#                                                   proxy_password, p,
-#                                                   user_agent)
-#
-#         await set_review(context, page, data)  # оставляем отзыв
-#
-#         if len(data['errors']) > 5:
-#             logger.error("Too many errors")
-#             await reviews_db.update_status(number=data['number'], status_id=2)
-#             return
-#         try:
-#             await save_cookies(data=data, context=context,
-#                                cookies_name='session')  # загружаем сессию в бд, в формате json
-#         except Exception as e:
-#             await error_log(data, f'Error saving data {e}')
-#     print(data)
-#     return data

@@ -12,33 +12,30 @@ orders_db = OrdersDB()
 
 async def starter():
     response = await reviews_db.check_time_to_work(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-    print(response)
     tasks = []
     for user in response:
         if user['number'] is not None:
-            print('прошёл', user)
+            # print('Номер есть', user['number'])
             tasks.append(
                 asyncio.create_task(add_review(order_id=user['order_id'], order_review_id=user['order_review_id'])))
 
         else:
-            print('не прошёл', user)
+            # print('Номера нет', user['number'])
             await assign_a_userbot(order_id=user['order_id'], order_review_id=user['order_review_id'])
-            print('го 2')
             tasks.append(
                 asyncio.create_task(add_review(order_id=user['order_id'], order_review_id=user['order_review_id'])))
 
     for task in tasks:
-        await task
+        try:
+            await task
+        except Exception as e:
+            logger.error(e)
 
 
-
-
-async def scheduler():
+async def sched():
     while True:
-        logger.info('Schedule..')
+        logger.success('Schedule..')
         await starter()
         await asyncio.sleep(6)
 
 
-asyncio.run(scheduler())
-print()

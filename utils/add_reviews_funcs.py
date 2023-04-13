@@ -69,28 +69,29 @@ async def assign_a_userbot(order_id, order_review_id):
     avito_users = await reviews_db.get_users_without_account_id(account_id)
 
     if not avito_users:
-        logger.info(f"Found 0 userbots")
+        logger.info(f"There were 0 workers on order №{order_id}|ID:{order_review_id}")
         return
 
     avito_user = random.choice(avito_users)
-    logger.info(f"Order №{order_id} is assigned Userbot {avito_user}")
     await reviews_db.update_review(order_id=order_id, order_review_id=order_review_id, phone=avito_user['number'])
+    logger.info(f"Order №{order_id} is assigned Userbot {avito_user['number']}")
 
 
 async def add_review(order_id, order_review_id):
     global avito_data
     await asyncio.sleep(2)
-    print(order_id, order_review_id)
 
     account_id = await orders_db.get_profile_id_from_order_id(order_id)  # получаем
     avito_users = await reviews_db.get_users_without_account_id(account_id)
     if not avito_users:
-        logger.info(f"Found 0 userbots")
-        # return
+        logger.info(f"There were 0 workers on order №{order_id}|ID:{order_review_id}")
+        return
 
     avito_user = random.choice(avito_users)
+    logger.info(f"Order №{order_id} is assigned Userbot {avito_user['number']}")
+
+    await reviews_db.update_status(number=avito_user['number'], status_id=1)
     reviews = await reviews_db.get_review(order_id=order_id, order_review_id=order_review_id)
-    await reviews_db.update_review(order_id=order_id, order_review_id=order_review_id, phone=avito_user['number'])
     site = await orders_db.get_order_link(order_id=order_id)
     proxy = json.loads(avito_user['proxy'])
 
@@ -118,8 +119,8 @@ async def add_review(order_id, order_review_id):
     except Exception as e:
         logger.error(e)
         await reviews_db.update_status(number=avito_user['number'], status_id=3)
+        await reviews_db.update_reviews_count(number=avito_user['number'], count=1)
         return
-
     # регаем текущее время
     now = datetime.now()
     timestamp = now.strftime("%Y-%m-%d %H:%M:%S.%f")
@@ -132,11 +133,3 @@ async def add_review(order_id, order_review_id):
 # async def get_random_review_on_priority():
 #     reviews =
 
-# async def main():
-#     tasks = [asyncio.create_task(add_review(2, 9)),
-#              asyncio.create_task(add_review(3, 10))]
-#     for task in tasks:
-#         await task
-#
-#
-# asyncio.run(main())
