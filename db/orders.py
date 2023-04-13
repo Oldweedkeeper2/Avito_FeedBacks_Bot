@@ -31,11 +31,31 @@ class OrdersDB(DB):
         finally:
             await conn.close()
 
-    async def get_order(self, order_id):
+    async def get_order_link(self, order_id):
         conn = await self.connection()
         try:
             link = await conn.fetchval("SELECT link FROM orders WHERE order_id = $1", order_id)
             return link
+        finally:
+            await conn.close()
+
+
+    async def get_order(self, order_id):
+        conn = await self.connection()
+        try:
+            query = "SELECT * FROM orders WHERE order_id = $1"
+            order = await conn.fetch(query, order_id)
+            return order[0]
+        finally:
+            await conn.close()
+
+
+    async def get_current_orders_ids(self):
+        conn = await self.connection()
+        try:
+            query = "SELECT order_id FROM orders WHERE current_count < reviews_count"
+            orders_ids = await conn.fetch(query)
+            return orders_ids
         finally:
             await conn.close()
 
