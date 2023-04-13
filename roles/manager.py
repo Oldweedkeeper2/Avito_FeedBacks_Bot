@@ -1,4 +1,3 @@
-import os
 from asyncio import sleep
 from aiogram.types import Message, CallbackQuery
 from aiogram.dispatcher import FSMContext

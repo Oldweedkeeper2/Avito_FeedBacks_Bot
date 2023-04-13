@@ -81,10 +81,10 @@ async def first_login(data, context, page):
         raise
 
 
-async def login_with_cookies(data, context):
-    # пока достаём из файла, пишем имя файла, позже будем передавать mail и password
-
-    # гугл срать хотел на то, что я ему куки заливаю
-    await load_cookies(data, context)
+# async def login_with_cookies(data, context):
+#     # пока достаём из файла, пишем имя файла, позже будем передавать mail и password
+#
+#     # гугл срать хотел на то, что я ему куки заливаю
+#     await load_cookies(data, context)
 
 # asyncio.run(first_login())

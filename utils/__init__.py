@@ -1,1 +1,1 @@
-from add_reviews_funcs import *
+from .add_reviews_funcs import *

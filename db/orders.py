@@ -20,7 +20,7 @@ class OrdersDB(DB):
         conn = await self.connection()
         order_id = await conn.fetchval(
             "INSERT INTO orders(link, reviews_count, avito_profile_id, finish_date) VALUES($1, $2, $3, $4) RETURNING order_id",
-            data['link'], data['reviews_count'], data['profile_link'], data['finish_date'])
+            data['link'], data['reviews_count'], data['profile_id'], data['finish_date'])
         return order_id
 
     async def get_profile_id_from_order_id(self, order_id):  # профиль id сюда
@@ -302,4 +302,13 @@ class ReviewsDB(DB):
         finally:
             await conn.close()
 
+    async def check_time_to_work(self, timestamp):
 
+        conn = await self.connection()
+        try:
+            query = f"SELECT * FROM reviews_texts WHERE status_id=0 AND review_date<=CURRENT_TIMESTAMP"
+            res = await conn.fetch(query)
+        finally:
+            await conn.close()
+
+        return res

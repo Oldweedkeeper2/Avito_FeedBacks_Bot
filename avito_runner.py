@@ -5,7 +5,7 @@ from loguru import logger
 from playwright.async_api import Playwright
 from playwright.async_api import async_playwright
 
-from avito.auth import first_login, login_with_cookies
+from avito.auth import first_login
 from avito.cookeis_commander import save_cookies, load_cookies
 from avito.error_logger import error_log
 from avito.mouse import emulate_mouse_movement
@@ -36,7 +36,7 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
     await create_proxy_settings(ip, port, proxy_username, proxy_password)
     size = get_random_viewport_size()
     browser_type = p.firefox
-    browser = await browser_type.launch(headless=False, timeout=50000)
+    browser = await browser_type.launch(headless=True, timeout=50000)
     context = await browser.new_context(user_agent=user_agent, viewport=size)
     page = await context.new_page()
     width, height = await page.evaluate("() => [window.innerWidth, window.innerHeight]")
@@ -77,15 +77,12 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
     except Exception as e:
         await error_log(data, f'Error setting session state, {e}')
 
-    try:
-        await login_with_cookies(data, context)  # логин по куки
-    except Exception as e:
-        await error_log(data, f'Error with login_with_cookies, {e}')
 
     try:
         await first_login(data, context, page)  # логин по гуглу
     except Exception as e:
         await error_log(data, f'Error with first_login, {e}')
+        return
 
     # input('Press Enter to continue')
     await asyncio.sleep(4)
@@ -94,6 +91,7 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
 
     except Exception as e:
         await error_log(data, f'Error page parsing, {e}')
+        return
     if not only_parse:
         try:
             await emulate_mouse_movement(page, duration=4)  # эмулируем человеческую мышь
@@ -110,7 +108,7 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
 
 
 async def start(number, mail: str, password: str, site: str, review_text: str, ip: str, port: str, proxy_username: str,
-                proxy_password: str, user_agent: str, only_parse=False):
+                proxy_password: str, user_agent: str, only_parse=True):
     async with async_playwright() as p:
         await reviews_db.update_status(number=number,
                                        status_id=2)  # похер, пусть пока будет такой статус при заходе
