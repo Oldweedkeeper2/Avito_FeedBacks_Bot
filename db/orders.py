@@ -1,7 +1,10 @@
 import json
+import math
 
 import asyncpg as pg
 from asyncpg import Connection
+
+from avito.review_randomizer import get_review_dates
 
 
 class DB:
@@ -126,10 +129,14 @@ class ReviewsDB(DB):
             if order_review_id is None:
                 order_review_id = 0
 
+            date_res = get_review_dates(num_reviews=int(data['reviews_count']), num_days=int(data['amount_of_days']),
+                                        max_per_day=math.ceil(int(data['reviews_count']) / int(data['amount_of_days'])))
+
             for text in data['texts']:
                 order_review_id += 1
-                await conn.execute('INSERT INTO reviews_texts (order_id, order_review_id, text) VALUES ($1, $2, $3)',
-                                   data['order_id'], order_review_id, text)
+                await conn.execute(
+                    'INSERT INTO reviews_texts (order_id, order_review_id, text, review_date) VALUES ($1, $2, $3, $4)',
+                    data['order_id'], order_review_id, text, next(date_res))
 
     async def add_cookies(self, number, session_cookies=None, avito_cookies=None, google_cookies=None):  # добавить куки
         conn = await self.connection()
