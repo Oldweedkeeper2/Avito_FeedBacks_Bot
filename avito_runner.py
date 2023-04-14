@@ -17,6 +17,7 @@ from db.orders import ReviewsDB
 
 reviews_db = ReviewsDB()
 
+
 def get_random_viewport_size():
     sizes = [
         {'width': 1920, 'height': 1080},
@@ -77,7 +78,6 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
         logger.info('Session data loaded (session, google, avito)')
     except Exception as e:
         await error_log(data, f'Error setting session state, {e}')
-
 
     try:
         await first_login(data, context, page)  # логин по гуглу
@@ -141,3 +141,14 @@ async def start(number, mail: str, password: str, site: str, review_text: str, i
             raise
     return data
 
+
+asyncio.run(start(number='89896372338', mail='milatre783@gmail.com', password='5Q3n5Us6x',
+                  site='https://www.avito.ru/krasnodar/detskaya_odezhda_i_obuv/baletki_tufli_33_r_dve_pary_2944039264',
+                  review_text='Балетки супер, у меня вот дочь маленькая капец какая, но даже она поняла какие эти балетки топ',
+                  ip='77.91.91.137',
+                  port='63910',
+                  proxy_username='DjYgvRek',
+                  proxy_password='jCcfW5CL',
+                  user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0'))
+# {"ip": "77.91.91.137", "port": "63910","username": "DjYgvRek", "password": "jCcfW5CL"
+#     }

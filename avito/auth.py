@@ -1,8 +1,9 @@
 import asyncio
 
-import loguru
+from loguru import logger
 from playwright_stealth import stealth_async
 
+from flask_manager import phone_manager
 from .cookeis_commander import save_cookies, load_cookies
 
 
@@ -46,15 +47,19 @@ async def avito_login(data, context, page):
         await button.click()
     except Exception as e:
         print(e)
-        loguru.logger.error('Error nen')
-    # try:
-    #     phone_code = input('введите код из смс это в auth.py')
-    #     await page.fill('input[name="code"]', phone_code)
-    #     await page.click('button[type="submit"]')
-    #     await asyncio.sleep(3)  # Тут мы ждём код с телефона
-    #
-    # except:
-    #     logger.error('Error when trying to authorize through the code')
+        logger.error('Error nen')
+    try:
+        await asyncio.sleep(60)
+        comport = phone_manager.phone_data[data['number']]
+        phone_code = phone_manager.code_data[comport]
+        print(comport, phone_code)
+        input('--стоппер--')
+        await page.fill('input[name="code"]', phone_code)
+        await page.click('button[type="submit"]')
+        await asyncio.sleep(3)  # Тут мы ждём код с телефона
+
+    except:
+        logger.error('Error when trying to authorize through the code')
     ''' 
     это кнопки выбора аккаунта, если нужно будет
             all_pages = context.pages

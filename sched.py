@@ -34,6 +34,7 @@ async def starter():
 async def sched():
     while True:
         logger.success('Schedule..')
+
         await starter()
         await asyncio.sleep(6)
 
