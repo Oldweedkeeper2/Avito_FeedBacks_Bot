@@ -11,8 +11,9 @@ logging.basicConfig(filename='logs.log', level=logging.WARNING)
 
 async def on_startup(_):
     init_all()
-    asyncio.create_task(sched())
+
     print('Online!')
+    asyncio.create_task(sched())
 
 
 async def on_shutdown(_):

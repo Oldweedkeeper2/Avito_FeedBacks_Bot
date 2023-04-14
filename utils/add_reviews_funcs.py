@@ -74,7 +74,7 @@ async def assign_a_userbot(order_id, order_review_id):
 
     avito_user = random.choice(avito_users)
     await reviews_db.update_review(order_id=order_id, order_review_id=order_review_id, phone=avito_user['number'])
-    logger.info(f"Order №{order_id} is assigned Userbot {avito_user['number']}")
+    logger.info(f"Order №{order_id}|ID:{order_review_id} is assigned Userbot {avito_user['number']}")
 
 
 async def add_review(order_id, order_review_id):
@@ -88,7 +88,7 @@ async def add_review(order_id, order_review_id):
         return
 
     avito_user = random.choice(avito_users)
-    logger.info(f"Order №{order_id} is assigned Userbot {avito_user['number']}")
+    logger.info(f"Order №{order_id}|ID:{order_review_id} is assigned Userbot {avito_user['number']}")
 
     await reviews_db.update_status(number=avito_user['number'], status_id=1)
     reviews = await reviews_db.get_review(order_id=order_id, order_review_id=order_review_id)

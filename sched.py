@@ -31,7 +31,6 @@ async def starter():
         except Exception as e:
             logger.error(e)
 
-
 async def sched():
     while True:
         logger.success('Schedule..')
