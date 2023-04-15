@@ -38,11 +38,11 @@ async def phone_checker(page, data):
             q = await popup_overlay.text_content()
             if q.lower().find('это временный номер') != -1:
                 data['phone_status'] = 'Временный'
-                print(data)
+                logger.debug(data)
                 return
             else:
                 data['phone_status'] = 'Постоянный'
-                print(data)
+                logger.debug(data)
                 return
         else:
             logger.error('Пользователь принимает только сообщения')

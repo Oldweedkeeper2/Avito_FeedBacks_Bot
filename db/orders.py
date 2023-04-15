@@ -9,7 +9,7 @@ from avito.review_randomizer import get_review_dates
 
 class DB:
     @staticmethod
-    async def connection(user='postgres', password='backwater', host='localhost', port='5432',
+    async def connection(user='postgres', password='123', host='localhost', port='5432',
                          database='avito_reviews_db') -> Connection:
         return await pg.connect(user=user, password=password, host=host, port=port, database=database)
 

@@ -40,33 +40,37 @@ async def google_login(data, context, page):
 async def avito_login(data, context, page):
     try:
         await stealth_async(page)
+        content = await page.content()
+        with open('content', 'w') as f:
+            f.write(content)
         await page.goto('https://www.avito.ru/#login?authsrc=h')
         await page.wait_for_url('https://www.avito.ru/#login?authsrc=h')
-        await page.wait_for_selector('button[data-marker="social-network-item(gp)"]')
+        await page.wait_for_selector('button[data-marker="social-network-item(gp)"]', timeout = 50000)
+        await asyncio.sleep(5)
         button = await page.query_selector('button[data-marker="social-network-item(gp)"]')
         await button.click()
     except Exception as e:
-        print(e)
-        logger.error('Error nen')
+        logger.error(f'Error nen {e}')
     try:
-        await asyncio.sleep(3)
-        comport = phone_manager.phone_data[data['number']]
-        phone_code = phone_manager.code_data[comport]
-        print(comport, phone_code)
-        phone_code = '5175848'
-        await page.wait_for_selector('input[name="code"]')
-        await asyncio.sleep(3)
+        await asyncio.sleep(70)
+        try:
+            logger.debug(phone_manager.phone_data)
+            comport = phone_manager.phone_data[data['number']]
+            logger.debug(phone_manager.code_data)
+            phone_code = phone_manager.code_data[comport]
+            logger.info(comport, phone_code)
+            await page.wait_for_selector('input[name="code"]')
+            await asyncio.sleep(3)
+        except Exception as e:
+            logger.warning(e)
         await page.fill('input[name="code"]', phone_code)
         await page.click('button[type="submit"]')
         await asyncio.sleep(3)  # Тут мы ждём код с телефона
         phone_wrapper = await page.query_selector('[data-marker="phone-confirm-wrapper"]')
-        text_context = await phone_wrapper.text_content()
-        print(text_context)
-        if text_context.lower().find('код устаревший') != -1:
-            raise
 
-    except:
-        logger.error('Error when trying to authorize through the code')
+
+    except Exception as e:
+        logger.error(f'Error when trying to authorize through the code, {e}')
         raise
     ''' 
     это кнопки выбора аккаунта, если нужно будет

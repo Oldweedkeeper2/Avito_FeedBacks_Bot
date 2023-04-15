@@ -5,7 +5,7 @@ from .mouse import emulate_mouse_movement
 async def parse_page(page, data):
     # Получаем страницу и переходим на неё
     await page.goto(data['site'])
-
+    logger.info('Зашёл')
     # Ждём какое-то время
     await emulate_mouse_movement(page, 3)
 
@@ -21,8 +21,8 @@ async def parse_page(page, data):
 
         link = await page.query_selector('[data-marker="seller-link/link"]')
         account_id = await link.get_attribute('href')
-        data['account_id'] = account_id.split('=')[-1]
-        print(data)
+        data['link_id'] = account_id.split('=')[-1]
+        logger.debug(data)
 
     except:
         raise

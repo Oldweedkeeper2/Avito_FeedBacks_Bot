@@ -5,6 +5,7 @@ from loguru import logger
 
 from db.orders import ReviewsDB, OrdersDB
 from utils import add_review, assign_a_userbot
+from flask_manager import phone_manager
 
 reviews_db = ReviewsDB()
 orders_db = OrdersDB()
@@ -34,7 +35,7 @@ async def starter():
 async def sched():
     while True:
         logger.success('Schedule..')
-
+        logger.debug(phone_manager.code_data)
         await starter()
         await asyncio.sleep(6)
 

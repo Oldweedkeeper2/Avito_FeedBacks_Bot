@@ -14,11 +14,11 @@ async def index(request):
         params = request.rel_url.query
         if 'номер' in params.get('message', '').lower():
             phone_manager.phone_data[params.get('message').split(' ')[-1]] = params.get('comport')
-            print(phone_manager.phone_data)
+            # print(phone_manager.phone_data)
 
         if 'Авито' in params.get('message', ''):
             phone_manager.code_data[params.get('comport')] = params.get('message').split(' ')[-1]
-            print(phone_manager.code_data[params.get('comport')])
+            # print(phone_manager.code_data[params.get('comport')])
 
         id = request.rel_url.query.get('id', '')
         return web.Response(text=f'{id}', status=200)

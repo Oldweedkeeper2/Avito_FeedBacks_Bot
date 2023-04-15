@@ -38,7 +38,7 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
     await create_proxy_settings(ip, port, proxy_username, proxy_password)
     size = get_random_viewport_size()
     browser_type = p.firefox
-    browser = await browser_type.launch(headless=False, timeout=50000)
+    browser = await browser_type.launch(headless=True, timeout=50000)
     context = await browser.new_context(user_agent=user_agent, viewport=size)
     page = await context.new_page()
     width, height = await page.evaluate("() => [window.innerWidth, window.innerHeight]")
@@ -74,11 +74,11 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
         await error_log(data, f'Proxy checking error, {e}')
         raise
 
-    try:
-        await load_cookies(data, context)
-        logger.info('Session data loaded (session, google, avito)')
-    except Exception as e:
-        await error_log(data, f'Error setting session state, {e}')
+    # try:
+    #    await load_cookies(data, context)
+    #    logger.info('Session data loaded (session, google, avito)')
+    #except Exception as e:
+    #    await error_log(data, f'Error setting session state, {e}')
 
     try:
         await first_login(data, context, page)  # логин по гуглу
@@ -110,7 +110,7 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
 
 
 async def start(number, mail: str, password: str, site: str, review_text: str, ip: str, port: str, proxy_username: str,
-                proxy_password: str, user_agent: str, only_parse=True):
+                proxy_password: str, user_agent: str, only_parse=False):
     async with async_playwright() as p:
         await reviews_db.update_status(number=number,
                                        status_id=1)  # похер, пусть пока будет такой статус при заходе
@@ -120,8 +120,9 @@ async def start(number, mail: str, password: str, site: str, review_text: str, i
                                                   user_agent, only_parse)  # ошибки обрабатываются внутри
         if not only_parse:
             await phone_checker(page, data)  # подготовка к отзыву, смотрим телефон
+            logger.info('Bot ended phone check')
             try:
-                delay_minutes = random.randint(1, 5)  # вот здесь изменять время задержки
+                delay_minutes = random.randint(1, 2)  # вот здесь изменять время задержки
                 # Устанавливаем задержку перед запуском задачи
                 await asyncio.sleep(delay_minutes * 60)
                 await set_review(context, page, data)  # оставляем отзыв ошибки обрабатываются внутри
