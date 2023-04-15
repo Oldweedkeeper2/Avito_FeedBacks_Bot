@@ -49,17 +49,25 @@ async def avito_login(data, context, page):
         print(e)
         logger.error('Error nen')
     try:
-        await asyncio.sleep(60)
+        await asyncio.sleep(3)
         comport = phone_manager.phone_data[data['number']]
         phone_code = phone_manager.code_data[comport]
         print(comport, phone_code)
-        input('--стоппер--')
+        phone_code = '5175848'
+        await page.wait_for_selector('input[name="code"]')
+        await asyncio.sleep(3)
         await page.fill('input[name="code"]', phone_code)
         await page.click('button[type="submit"]')
         await asyncio.sleep(3)  # Тут мы ждём код с телефона
+        phone_wrapper = await page.query_selector('[data-marker="phone-confirm-wrapper"]')
+        text_context = await phone_wrapper.text_content()
+        print(text_context)
+        if text_context.lower().find('код устаревший') != -1:
+            raise
 
     except:
         logger.error('Error when trying to authorize through the code')
+        raise
     ''' 
     это кнопки выбора аккаунта, если нужно будет
             all_pages = context.pages

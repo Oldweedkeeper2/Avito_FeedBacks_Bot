@@ -10,6 +10,7 @@ from avito.cookeis_commander import save_cookies, load_cookies
 from avito.error_logger import error_log
 from avito.mouse import emulate_mouse_movement
 from avito.parse import parse_page
+from avito.phone_finder import phone_checker
 from avito.profile_commander import check_contact_snippet
 from avito.proxy import check_ip_address, create_proxy_settings
 from avito.reviews import set_review
@@ -37,7 +38,7 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
     await create_proxy_settings(ip, port, proxy_username, proxy_password)
     size = get_random_viewport_size()
     browser_type = p.firefox
-    browser = await browser_type.launch(headless=True, timeout=50000)
+    browser = await browser_type.launch(headless=False, timeout=50000)
     context = await browser.new_context(user_agent=user_agent, viewport=size)
     page = await context.new_page()
     width, height = await page.evaluate("() => [window.innerWidth, window.innerHeight]")
@@ -109,7 +110,7 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
 
 
 async def start(number, mail: str, password: str, site: str, review_text: str, ip: str, port: str, proxy_username: str,
-                proxy_password: str, user_agent: str, only_parse=False):
+                proxy_password: str, user_agent: str, only_parse=True):
     async with async_playwright() as p:
         await reviews_db.update_status(number=number,
                                        status_id=1)  # похер, пусть пока будет такой статус при заходе
@@ -118,7 +119,7 @@ async def start(number, mail: str, password: str, site: str, review_text: str, i
                                                   proxy_password, p,
                                                   user_agent, only_parse)  # ошибки обрабатываются внутри
         if not only_parse:
-            # await phone_checker(page, data)  # подготовка к отзыву, смотрим телефон
+            await phone_checker(page, data)  # подготовка к отзыву, смотрим телефон
             try:
                 delay_minutes = random.randint(1, 5)  # вот здесь изменять время задержки
                 # Устанавливаем задержку перед запуском задачи
