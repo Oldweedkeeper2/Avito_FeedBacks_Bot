@@ -184,7 +184,11 @@ async def find_cell(page, data):
                     await asyncio.sleep(4)
                     # Набираем текст комментария
                     # Если мы слишком долго ждём, то может слететь и куки и всё на свете (не уверен)
-                    await writer(text_area, data['review_text'])
+                    try:
+                        logger.info("Writing review")
+                        await writer(text_area, data['review_text'])
+                    except Exception as e:
+                        await error_log(data=data, error_text='Error while writing review text')
                     # await stars.click('div[data-marker="field/score/star5"]')
                     await asyncio.sleep(3)
                     input('stopping')

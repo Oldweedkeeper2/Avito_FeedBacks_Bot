@@ -1,16 +1,17 @@
 from loguru import logger
+
 from .mouse import emulate_mouse_movement
 
 
 async def parse_page(page, data):
     # Получаем страницу и переходим на неё
     await page.goto(data['site'])
-    logger.info('Зашёл')
     # Ждём какое-то время
     await emulate_mouse_movement(page, 3)
 
     # Получаем картинку и достаём ссылку на неё
     try:
+        await page.wait_for_selector('[class^="image-frame-wrapper-"]')
         photo = await page.query_selector('[class^="image-frame-wrapper-"]')
         photo_link = await photo.query_selector('img')
         data['photo_link'] = await photo_link.get_attribute('src')

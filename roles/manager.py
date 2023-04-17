@@ -1,12 +1,14 @@
+import os
 from asyncio import sleep
-from aiogram.types import Message, CallbackQuery
-from aiogram.dispatcher import FSMContext
 
-from orders.start import start_reviews
-from states.manager_states import *
+from aiogram.dispatcher import FSMContext
+from aiogram.types import Message, CallbackQuery
+
 from keyboards.manager_keyboards import *
-from utils.add_reviews_funcs import *
 from loader import bot
+from states.manager_states import *
+from utils.add_reviews_funcs import *
+
 
 async def start_command_handler(msg: Message, state: FSMContext):
     await msg.delete()

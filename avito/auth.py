@@ -4,7 +4,7 @@ from loguru import logger
 from playwright_stealth import stealth_async
 
 from flask_manager import phone_manager
-from .cookeis_commander import save_cookies, load_cookies
+from .cookeis_commander import save_cookies
 
 
 # можно сохранять прямо в бд, вообще плевать
@@ -36,8 +36,8 @@ async def google_login(data, context, page):
 
     await save_cookies(data, context, 'google')  # Сохраняем куки (пока в файл)
 
-
 async def avito_login(data, context, page):
+    global phone_code
     try:
         await stealth_async(page)
         content = await page.content()
@@ -45,33 +45,34 @@ async def avito_login(data, context, page):
             f.write(content)
         await page.goto('https://www.avito.ru/#login?authsrc=h')
         await page.wait_for_url('https://www.avito.ru/#login?authsrc=h')
-        await page.wait_for_selector('button[data-marker="social-network-item(gp)"]', timeout = 50000)
+        await page.wait_for_selector('button[data-marker="social-network-item(gp)"]', timeout=50000)
         await asyncio.sleep(5)
         button = await page.query_selector('button[data-marker="social-network-item(gp)"]')
         await button.click()
     except Exception as e:
-        logger.error(f'Error nen {e}')
+        logger.error(f'Error Avito load, {e}')
     try:
-        await asyncio.sleep(70)
-        try:
-            logger.debug(phone_manager.phone_data)
-            comport = phone_manager.phone_data[data['number']]
-            logger.debug(phone_manager.code_data)
-            phone_code = phone_manager.code_data[comport]
-            logger.info(comport, phone_code)
-            await page.wait_for_selector('input[name="code"]')
-            await asyncio.sleep(3)
-        except Exception as e:
-            logger.warning(e)
-        await page.fill('input[name="code"]', phone_code)
-        await page.click('button[type="submit"]')
-        await asyncio.sleep(3)  # Тут мы ждём код с телефона
-        phone_wrapper = await page.query_selector('[data-marker="phone-confirm-wrapper"]')
+        await page.wait_for_selector('[class^="index-services-menu-avatar-image-"]')
+        if not await page.query_selector('[class^="index-services-menu-avatar-image-"]'):
+            try:
+                await asyncio.sleep(70)
+                logger.debug(phone_manager.phone_data)
+                comport = phone_manager.phone_data[data['number']]
+                logger.debug(phone_manager.code_data)
+                phone_code = phone_manager.code_data[comport]
+                logger.info(comport, phone_code)
+                await page.wait_for_selector('input[name="code"]')
+                await asyncio.sleep(3)
+                # phone_code = input('phone_code: ')
+                await page.fill('input[name="code"]', phone_code)
+                await page.click('button[type="submit"]')
 
-
+            except Exception as e:
+                logger.warning(f'When entering the code, {e}')
+        else:
+            logger.info(f'Already authorized')
     except Exception as e:
-        logger.error(f'Error when trying to authorize through the code, {e}')
-        raise
+        logger.warning(e)
     ''' 
     это кнопки выбора аккаунта, если нужно будет
             all_pages = context.pages
@@ -89,10 +90,12 @@ async def first_login(data, context, page):
     try:
         await google_login(data, context, page)
     except Exception:
-        pass
+        raise
+    logger.info('Google authorization completed')
+
     # Авторизация в авито/ эта шляпа иногда может выдавать белый экран в открывашке, лечится релоадом и ожиданием всего
     try:
         await avito_login(data, context, page)
-    except Exception as e:
-        print(e)
+    except Exception:
         raise
+    logger.info('Avito authorization completed')

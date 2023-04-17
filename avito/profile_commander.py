@@ -24,6 +24,7 @@ async def see_more_snippet(page, selector: str):
 # можно сделать переход на отзывы через нажатие на звёздочку, но через поиск более человечно.
 async def check_contact_snippet(page, data):
     # проверка товаров "Ждут оценки"
+    logger.info("Checking contact snippet")
     data_awaited = {}
     data_posted = {}
     await page.goto('https://www.avito.ru/profile/contacts?page_from=profile_menu')

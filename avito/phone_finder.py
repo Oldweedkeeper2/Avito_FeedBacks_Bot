@@ -37,15 +37,16 @@ async def phone_checker(page, data):
 
             q = await popup_overlay.text_content()
             if q.lower().find('это временный номер') != -1:
-                data['phone_status'] = 'Временный'
+                data['phone_status'] = 'Temporary'
                 logger.debug(data)
                 return
             else:
-                data['phone_status'] = 'Постоянный'
+                data['phone_status'] = 'Permanent'
                 logger.debug(data)
                 return
         else:
-            logger.error('Пользователь принимает только сообщения')
+            logger.warning('The user only accepts messages')
+            await page.wait_for_selector('[data-marker="messenger-button/button"]')
             await page.click('[data-marker="messenger-button/button"]')
             textarea = await page.query_selector('[data-marker="reply/input"]')
             for word in data['send_message'].split(' '):
@@ -55,5 +56,5 @@ async def phone_checker(page, data):
 
 
     except:
-        await error_log(data, 'Не удалось нажать на кнопку "Открыть телефон"')
+        await error_log(data, 'Failed to click on the "Open Phone" button')
         return
