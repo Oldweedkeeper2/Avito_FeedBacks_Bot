@@ -28,7 +28,7 @@ async def phone_checker(page, data):
                 await page.wait_for_url(data['site'])
                 await page.click('[data-marker="item-phone-button/header"]')
             # Ожидание на странице (для лучшего эффекта сюда бы ещё эмулятор мышки запихнуть)
-            await asyncio.sleep(4)
+            await page.wait_for_timeout(4)
 
             if await page.query_selector('[data-marker="item-popup/popup"]'):
                 popup_overlay = await page.query_selector('[data-marker="item-popup/popup"]')
@@ -51,7 +51,7 @@ async def phone_checker(page, data):
             textarea = await page.query_selector('[data-marker="reply/input"]')
             for word in data['send_message'].split(' '):
                 await writer(textarea, word)
-        await asyncio.sleep(3)
+        await page.wait_for_timeout(3)
         return
 
 

@@ -36,7 +36,7 @@ async def sched():
     while True:
         logger.success('Schedule..')
         logger.debug(phone_manager.code_data)
-        await starter()
+        asyncio.create_task(starter())
         await asyncio.sleep(6)
 
 
