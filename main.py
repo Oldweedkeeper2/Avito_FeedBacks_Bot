@@ -23,7 +23,16 @@ async def on_startup(_):
     site = web.TCPSite(runner, host='195.2.67.220', port=80)
     await asyncio.sleep(10)
     await site.start()
-    asyncio.create_task(sched())
+    asyncio.create_task(
+        start(number='79897002514', mail='bereznojakov09@gmail.com', password='Hu-Rd346',
+              site='https://www.avito.ru/krasnodar/predlozheniya_uslug/krutoy_dizayn_vizitok_flaerov_listovok_bukletov_3050623811',
+              review_text='Всё на высшем уровне, получилось так, как я хотел, только даже лучше. Андрей очень помог нам с дизайном флайеров!',
+              ip='45.146.230.75',
+              port='63980',
+              proxy_username='sZmCpM1j',
+              proxy_password='DBwZBaZa',
+              user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0'))
+
 
 async def on_shutdown(_):
     print('Bye!')
