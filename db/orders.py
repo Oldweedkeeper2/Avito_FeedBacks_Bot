@@ -70,7 +70,7 @@ class ReviewsDB(DB):
 
         try:
             query = "SELECT * FROM avito_users WHERE NOT EXISTS (SELECT * FROM userbots_accounts_busy " \
-                    "WHERE number = avito_users.number AND account_id = $1 AND (SELECT actual_status FROM avito_users WHERE actual_status = 0))"
+                    "WHERE number = avito_users.number AND account_id = $1)"
             numbers = await conn.fetch(query, account_id)
             return numbers
         finally:

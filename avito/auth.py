@@ -51,28 +51,28 @@ async def avito_login(data, context, page):
         await button.click()
     except Exception as e:
         logger.error(f'Error Avito load, {e}')
+    #try:
+        #await page.wait_for_selector('[class^="index-services-menu-avatar-image-"]')
+        #if not await page.query_selector('[class^="index-services-menu-avatar-image-"]'):
     try:
-        await page.wait_for_selector('[class^="index-services-menu-avatar-image-"]')
-        if not await page.query_selector('[class^="index-services-menu-avatar-image-"]'):
-            try:
-                await asyncio.sleep(70)
-                logger.debug(phone_manager.phone_data)
-                comport = phone_manager.phone_data[data['number']]
-                logger.debug(phone_manager.code_data)
-                phone_code = phone_manager.code_data[comport]
-                logger.info(comport, phone_code)
-                await page.wait_for_selector('input[name="code"]')
-                await asyncio.sleep(3)
-                # phone_code = input('phone_code: ')
-                await page.fill('input[name="code"]', phone_code)
-                await page.click('button[type="submit"]')
+        await asyncio.sleep(70)
+        logger.debug(phone_manager.phone_data)
+        comport = phone_manager.phone_data[data['number']]
+        logger.debug(phone_manager.code_data)
+        phone_code = phone_manager.code_data[comport]
+        logger.info(comport, phone_code)
+        await page.wait_for_selector('input[name="code"]')
+        await asyncio.sleep(3)
+        # phone_code = input('phone_code: ')
+        await page.fill('input[name="code"]', phone_code)
+        await page.click('button[type="submit"]')
 
-            except Exception as e:
-                logger.warning(f'When entering the code, {e}')
-        else:
-            logger.info(f'Already authorized')
     except Exception as e:
-        logger.warning(e)
+        logger.warning(f'When entering the code, {e}')
+        #else:
+        #    logger.info(f'Already authorized')
+    # except Exception as e:
+      #  logger.warning(e)
     ''' 
     это кнопки выбора аккаунта, если нужно будет
             all_pages = context.pages

@@ -7,21 +7,20 @@ phone_manager = PhoneManager()
 
 
 async def index(request):
-    if request.method == 'POST':
-        data = await request.post()
-        return web.Response(text=f'Received POST data: {data}')
-    else:
-        params = request.rel_url.query
-        if 'номер' in params.get('message', '').lower():
-            phone_manager.phone_data[params.get('message').split(' ')[-1]] = params.get('comport')
-            # print(phone_manager.phone_data)
-
-        if 'Авито' in params.get('message', ''):
-            phone_manager.code_data[params.get('comport')] = params.get('message').split(' ')[-1]
-            # print(phone_manager.code_data[params.get('comport')])
-
-        id = request.rel_url.query.get('id', '')
-        return web.Response(text=f'{id}', status=200)
+    if request.method == 'GET':
+        param = request.rel_url.query
+        print(param)
+        id = param.get('id')
+        sender = param.get('from')
+        to = param.get('to')
+        message = param.get('message')
+        imsi = param.get('imsi')
+        imei = param.get('imei')
+        comport = param.get('comport')
+        simno = param.get('simno')
+        if 'Авито' in message:
+            phone_manager.phone_data[simno] = message.split(' ')[-1]
+    return web.Response(text=' ', status=200)
 
 
 # app.router.add_route('*', '/', index)
