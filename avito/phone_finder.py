@@ -22,28 +22,42 @@ async def phone_checker(page, data):
         if await page.query_selector('button[data-marker="item-phone-button/card"]'):
             # logger.info(await page.query_selector_all('button[data-marker="item-phone-button/card"]'))
             try:
-                await page.click('[data-marker="item-phone-button/card"]')
-            except:
-                await page.reload()
-                await page.wait_for_url(data['site'])
+
                 await page.click('[data-marker="item-phone-button/header"]')
+            except:
+                # await page.reload()
+                # await page.wait_for_url(data['site'])
+                await page.click('[data-marker="item-phone-button/card"]')
             # Ожидание на странице (для лучшего эффекта сюда бы ещё эмулятор мышки запихнуть)
-            await page.wait_for_timeout(4)
+            await page.wait_for_timeout(6)
+            
+            cont = await page.content()
+            with open('cont4.html','w') as f:
+                f.write(cont)
 
-            if await page.query_selector('[data-marker="item-popup/popup"]'):
-                popup_overlay = await page.query_selector('[data-marker="item-popup/popup"]')
-            else:
-                popup_overlay = await page.query_selector('[data-marker="phone-popup/popup"]')
+            try:
+                await page.wait_for_selector('[data-marker="item-popup/overlay"]')
+                w = await page.query_selector('[data-marker="item-popup/overlay"]')
+                
+                # if await page.query_selector('[data-marker="item-popup/popup"]'):
+                    # popup_overlay = await page.query_selector('[data-marker="item-popup/popup"]')
+                # else:
+                    # popup_overlay = await page.query_selector('[data-marker="phone-popup/popup"]')
+                
+                q = w.text_content()
+                print(q)
 
-            q = await popup_overlay.text_content()
-            if q.lower().find('это временный номер') != -1:
-                data['phone_status'] = 'Temporary'
-                logger.debug(data)
-                return
-            else:
-                data['phone_status'] = 'Permanent'
-                logger.debug(data)
-                return
+                if q.lower().find('это временный номер') != -1:
+                    data['phone_status'] = 'Temporary'
+                    logger.debug(data)
+                    return
+                else:
+                    data['phone_status'] = 'Permanent'
+                    logger.debug(data)
+                    return
+            except Exception as e:
+                logger.warning(e)
+
         else:
             logger.warning('The user only accepts messages')
             await page.wait_for_selector('[data-marker="messenger-button/button"]')
@@ -55,6 +69,10 @@ async def phone_checker(page, data):
         return
 
 
-    except:
-        await error_log(data, 'Failed to click on the "Open Phone" button')
+    except Exception as e:
+        cont = await page.content()
+        with open('cont.html','w') as f:
+            f.write(cont)
+
+        await error_log(data, f'Failed to click on the "Open Phone" button, {e}')
         return

@@ -43,24 +43,36 @@ async def avito_login(data, context, page):
         content = await page.content()
         with open('content', 'w') as f:
             f.write(content)
-        await page.goto('https://www.avito.ru/#login?authsrc=h')
-        await page.wait_for_url('https://www.avito.ru/#login?authsrc=h')
-        await page.wait_for_selector('button[data-marker="social-network-item(gp)"]', timeout=50000)
+        await page.goto('https://www.avito.ru')
+        await asyncio.sleep(2)
+        try:
+            await page.goto('https://www.avito.ru/#login?authsrc=h')
+            await asyncio.sleep(6)
+        except:
+            await page.goto('https://www.avito.ru/#login?authsrc=h')
+            await page.wait_for_url('https://www.avito.ru/#login?authsrc=h')
+        
         await asyncio.sleep(5)
         button = await page.query_selector('button[data-marker="social-network-item(gp)"]')
-        await button.click()
+        if button is not None:
+            await button.click()
+        else:
+            logger.warning('social-network-item is None')
+        logger.info('Authorization avito in process..')
     except Exception as e:
         logger.error(f'Error Avito load, {e}')
     #try:
         #await page.wait_for_selector('[class^="index-services-menu-avatar-image-"]')
         #if not await page.query_selector('[class^="index-services-menu-avatar-image-"]'):
     try:
-        await asyncio.sleep(70)
-        logger.debug(phone_manager.phone_data)
-        comport = phone_manager.phone_data[data['number']]
-        logger.debug(phone_manager.code_data)
-        phone_code = phone_manager.code_data[comport]
-        logger.info(comport, phone_code)
+        await asyncio.sleep(10)
+        p = phone_manager.phone_data.keys()
+        for i in p:
+            logger.debug(i)
+        #comport = phone_manager.phone_data[data['number']]
+        #logger.debug(phone_manager.code_data)
+        phone_code = phone_manager.phone_data[data['number']]
+        #logger.info(comport, phone_code)
         await page.wait_for_selector('input[name="code"]')
         await asyncio.sleep(3)
         # phone_code = input('phone_code: ')
@@ -97,5 +109,5 @@ async def first_login(data, context, page):
     try:
         await avito_login(data, context, page)
     except Exception:
-        raise
+        return
     logger.info('Avito authorization completed')

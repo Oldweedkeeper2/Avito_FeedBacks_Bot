@@ -39,7 +39,7 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
     size = get_random_viewport_size()
     browser_type = p.firefox
     browser = await browser_type.launch(headless=True, timeout=50000)
-    context = await browser.new_context(user_agent=user_agent, viewport=size)
+    context = await browser.new_context(viewport=size)
     page = await context.new_page()
     width, height = await page.evaluate("() => [window.innerWidth, window.innerHeight]")
     data = dict(number=number,
@@ -74,11 +74,11 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
         await error_log(data, f'Proxy checking error, {e}')
         raise
 
-    #try:
-    #    await load_cookies(data, context)
-    #    logger.info('Session data loaded (session, google, avito)')
-    #except Exception as e:
-    #    await error_log(data, f'Error setting session state, {e}')
+    try:
+        await load_cookies(data, context)
+        logger.info('Session data loaded (session, google, avito)')
+    except Exception as e:
+        await error_log(data, f'Error setting session state, {e}')
 
     try:
         await first_login(data, context, page)  # логин по гуглу
@@ -99,11 +99,11 @@ async def main(number: str, mail: str, password: str, site: str, review_text: st
         except Exception as e:
             await error_log(data, f'Error emulate_mouse_movement, {e}')
 
-        try:
-            await check_contact_snippet(page, data)  # проверяем ждущие отзывы (вынести в отдельную функцию
-
-        except Exception as e:
-            await error_log(data, f'Error with check contact snippet')
+        #try:
+        #    await check_contact_snippet(page, data)  # проверяем ждущие отзывы (вынести в отдельную функцию
+        #
+        #except Exception as e:
+        #    await error_log(data, f'Error with check contact snippet')
 
     return browser, context, page, data
 
@@ -142,11 +142,4 @@ async def start(number, mail: str, password: str, site: str, review_text: str, i
             raise
     return data
 
-# asyncio.run(start(number='79185863704', mail='AndoimGavrilov671@gmail.com', password='ad5jQClii5IC',
-#                   site='https://www.avito.ru/krasnodar/detskaya_odezhda_i_obuv/baletki_tufli_33_r_dve_pary_2944039264',
-#                   review_text='Балетки супер, у меня вот дочь маленькая капец какая, но даже она поняла какие эти балетки топ',
-#                   ip='77.91.91.137',
-#                   port='63910',
-#                   proxy_username='DjYgvRek',
-#                   proxy_password='jCcfW5CL',
-#                   user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0'))
+

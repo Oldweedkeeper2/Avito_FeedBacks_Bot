@@ -45,8 +45,8 @@ async def message_confirmation(page, data):
                             # Нажатие кнопки
                             # Дописать проверку текста на кнопке
                             if not await page.query_selector('[data-marker="contextActions(0)/button"]'):
-                                # logger.error('Consent button not found')
-                                await error_log(data, 'Consent button not found')
+                                logger.warning('Consent button not found')
+                                # await error_log(data, 'Consent button not found')
                                 return
 
                             await page.click('[data-marker="contextActions(0)/button"]')
@@ -69,9 +69,8 @@ async def review_preparation(context, page, data):
     try:
         await page.goto(data['site'])
     except Exception as e:
-        # logger.error(f'{e}')
-        await error_log(data, f'{e}')
-
+        logger.error(f'{e}')
+        # await error_log(data, f'{e}')
     try:
         # Обязательно ждём всё, на что нажимаем, потому что это авито
         try:
@@ -84,19 +83,26 @@ async def review_preparation(context, page, data):
             await page.goto(data['site'] + '#open-reviews-list')
             # Ждём открытия окна (сделай потом через ожидание селекторов)
             await page.wait_for_timeout(3)
-            # Ждём открытие страницы
+            with open('revlog.html', 'w') as f:
+                f.write(await page.content())
+            # Ждём открытие страницы:
             try:
-                async with context.expect_page(timeout=5000) as popup_info:
-                    if await page.query_selector('button[data-marker="ratingSummary/addReviewButton"]'):
-                        await page.click('button[data-marker="ratingSummary/addReviewButton"]')
-                    else:
-                        raise Exception
+                # async with context.expect_page(timeout=10000) as popup_info:
+                await page.wait_for_selector('brtton[data-marker="ratingSummary/addReviewButton"]')
+                print(await page.wait_for_selector('brtton[data-marker="ratingSummary/addReviewButton"]')) 
+                input('--')
+                if await page.query_selector('button[data-marker="ratingSummary/addReviewButton"]'):
+                    print('ало блять')
+
+                    await page.click('button[data-marker="ratingSummary/addReviewButton"]')
+                else:
+                    raise Exception
                 popup = await popup_info.value
                 await popup.wait_for_load_state(timeout=10000)
-            except:
+            except Exception as e:
                 # можно после этого проверять на оставленные отзывы
-                # logger.error(f'Reviews button not found {e}')
-                await error_log(data, f'Reviews button not found')
+                logger.error(f'Reviews button not found {e}')
+                # await error_log(data, f'Reviews button not found')
 
                 return
 
@@ -115,13 +121,17 @@ async def review_preparation(context, page, data):
             # input('-review_preparation-end-')
             return popup
         else:
-            # logger.error('Кнопка "Отзывы" не найдены')
-            await error_log(data, 'Reviews button not found')
+            cont = await page.content()
+            with open('cont2.html','w') as f:
+                f.write(cont)
+            logger.error('Кнопка "Отзывы" не найдены')
+            print('Конец', await page.query_selector('[data-marker="rating-caption/rating"]'))
+            # await error_log(data, 'Reviews button not found')
             return
 
     except Exception as e:
-        # logger.error(f'Can\'t find button to leave feedback {e}')
-        await error_log(data, rf'Can\'t find button to leave feedback {e}')
+        logger.error(f'Can\'t find button to leave feedback {e}')
+        # await error_log(data, rf'Can\'t find button to leave feedback {e}')
 
 
 async def smart_search(page, data):
@@ -224,12 +234,12 @@ async def find_cell(page, data):
 
 
 async def set_review(context, page, data):
-    try:
-        await message_confirmation(page, data)
-    except Exception as e:
-        await error_log(data, f'Review link not found, {e}')
+    #try:
+    #    await message_confirmation(page, data)
+    #except Exception as e:
+    #    await error_log(data, f'Review link not found, {e}')
 
-    await emulate_mouse_movement(page, 3)
+    #await emulate_mouse_movement(page, 3)
     try:
         page = await review_preparation(context, page, data)
         if page:
